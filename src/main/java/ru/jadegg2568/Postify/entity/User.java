@@ -30,7 +30,7 @@ public class User {
     private String passwordHash;
 
     @Column(unique = true, nullable = false, length = 24)
-    private String username;
+    private String name;
 
     @Column(length = 32)
     private String title;

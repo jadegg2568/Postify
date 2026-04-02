@@ -1,2 +1,23 @@
 spring:
-  application.name: Postify
+  application:
+    name: Postify
+  
+  datasource:
+    url: jdbc:postgresql://localhost:5432/postify
+    username: postify_user
+    password: postify_pass
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      connection-timeout: 30000
+      maximum-pool-size: 10
+      pool-name: PostifyHikariPool
+
+  jpa:
+    hibernate:
+      ddl-auto: update # will be replaced by flyway
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+
+logging:
+  root: LOG
