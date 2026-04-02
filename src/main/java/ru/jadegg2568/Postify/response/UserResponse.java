@@ -4,6 +4,6 @@ import java.util.UUID;
 
 public record UserResponse(UUID uuid,
                            String name,
-                           String title,
+                           String displayName,
                            String description) {
 }

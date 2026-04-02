@@ -22,7 +22,6 @@ public interface UserMapper {
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "uuid", ignore = true)
     @Mapping(target = "mail", ignore = true)        // split
-    @Mapping(target = "name", ignore = true)
     @Mapping(target = "passwordHash", ignore = true) // split
     @Mapping(target = "photoKey", ignore = true)     // split
     @Mapping(target = "createdAt", ignore = true)

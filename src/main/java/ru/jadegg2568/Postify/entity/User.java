@@ -37,7 +37,7 @@ public class User {
     private String name;
 
     @Column(length = 32)
-    private String title;
+    private String displayName;
 
     @Column(length = 256)
     private String description;
