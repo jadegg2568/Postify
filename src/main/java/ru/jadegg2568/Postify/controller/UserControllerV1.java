@@ -1,4 +1,4 @@
-package ru.jadegg2568.Postify.api.v1;
+package ru.jadegg2568.Postify.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
