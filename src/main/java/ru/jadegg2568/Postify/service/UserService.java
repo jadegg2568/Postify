@@ -5,9 +5,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.jadegg2568.Postify.entity.User;
-import ru.jadegg2568.Postify.exception.InvalidCredentialsException;
-import ru.jadegg2568.Postify.exception.UserAlreadyExistsException;
-import ru.jadegg2568.Postify.exception.UserNotFoundException;
+import ru.jadegg2568.Postify.exception.auth.InvalidCredentialsException;
+import ru.jadegg2568.Postify.exception.user.UserAlreadyExistsException;
+import ru.jadegg2568.Postify.exception.user.UserNotFoundException;
 import ru.jadegg2568.Postify.mapper.UserMapper;
 import ru.jadegg2568.Postify.repository.UserRepository;
 import ru.jadegg2568.Postify.request.LoginRequest;
@@ -15,6 +15,7 @@ import ru.jadegg2568.Postify.request.RegisterRequest;
 import ru.jadegg2568.Postify.request.UpdateProfileRequest;
 
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @Service
@@ -49,9 +50,9 @@ public class UserService {
     }
 
     @Transactional
-    public User updateProfile(UUID uuid, UpdateProfileRequest request) {
-        User user = userRepository.findByUuid(uuid)
-                .orElseThrow(UserNotFoundException::new);
+    public User updateProfile(UUID authUuid, UpdateProfileRequest request) {
+        User user = userRepository.findByUuid(authUuid)
+                .orElseThrow(() -> new InvalidCredentialsException(Map.of()));
 
         userMapper.updateEntity(request, user);
         return user;
@@ -63,11 +64,11 @@ public class UserService {
     }
 
     @Transactional
-    public void delete(UUID uuid) {
-        if (!userRepository.existsByUuid(uuid)) {
+    public void delete(UUID authUuid) {
+        if (!userRepository.existsByUuid(authUuid)) {
             throw new UserNotFoundException();
         }
-        userRepository.deleteByUuid(uuid);
+        userRepository.deleteByUuid(authUuid);
     }
 
     public User getByUuid(UUID uuid) {
