@@ -57,6 +57,7 @@ dependencies {
 tasks.withType<JavaCompile> {
 	options.annotationProcessorPath = configurations.annotationProcessor.get()
 	options.compilerArgs = listOf(
+		"-parameters", // Spring Boot Gradle plugin doesn't add it automatically
 		"-Amapstruct.defaultComponentModel=spring",
 //		"-Amapstruct.unmappedTargetPolicy=IGNORE"
 	)
