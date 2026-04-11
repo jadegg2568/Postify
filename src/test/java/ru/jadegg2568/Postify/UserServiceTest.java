@@ -7,11 +7,12 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import ru.jadegg2568.Postify.request.*;
 import ru.jadegg2568.Postify.entity.User;
 import ru.jadegg2568.Postify.exception.auth.InvalidCredentialsException;
-import ru.jadegg2568.Postify.exception.user.UserAlreadyExistsException;
+import ru.jadegg2568.Postify.exception.auth.NotAuthorizedException;
 import ru.jadegg2568.Postify.exception.user.UserNotFoundException;
 import ru.jadegg2568.Postify.mapper.UserMapper;
 import ru.jadegg2568.Postify.repository.UserRepository;
@@ -72,8 +73,6 @@ class UserServiceTest {
     @DisplayName("register - должен зарегистрировать пользователя когда данные валидны")
     void register_ShouldRegisterUser_WhenCredentialsAreValid() {
         // given
-        when(userRepository.existsByMailOrName(registerRequest.mail(), registerRequest.name()))
-                .thenReturn(false);
         when(userMapper.toEntity(registerRequest)).thenReturn(user);
         when(passwordEncoder.encode(registerRequest.password())).thenReturn("encodedPassword");
         when(userRepository.save(any(User.class))).thenReturn(user);
@@ -92,14 +91,13 @@ class UserServiceTest {
     @DisplayName("register - должен выбросить ошибку если пользователь уже существует")
     void register_ShouldThrowException_WhenUserAlreadyExists() {
         // given
-        when(userRepository.existsByMailOrName(registerRequest.mail(), registerRequest.name()))
-                .thenReturn(true);
+        when(userMapper.toEntity(registerRequest)).thenReturn(user);
+        when(userRepository.save(any(User.class)))
+                .thenThrow(DataIntegrityViolationException.class);
 
         // when & then
         assertThatThrownBy(() -> userService.register(registerRequest))
-                .isInstanceOf(UserAlreadyExistsException.class);
-        
-        verify(userRepository, never()).save(any());
+                .isInstanceOf(DataIntegrityViolationException.class);
     }
 
     @Test
@@ -141,7 +139,7 @@ class UserServiceTest {
 
     @Test
     @DisplayName("updateProfile - должен обновить профиль когда пользователь найден")
-    void updateProfile_ShouldUpdateUser_WhenUserExists() {
+    void updateProfile_ShouldUpdateMyUser_WhenUserExists() {
         when(userRepository.findByUuid(uuid)).thenReturn(Optional.of(user));
 
         doAnswer(inv -> {
@@ -153,7 +151,7 @@ class UserServiceTest {
             return null;
         }).when(userMapper).updateEntity(any(), any());
 
-        User result = userService.updateProfile(uuid, updateProfileRequest);
+        User result = userService.updateMyProfile(uuid, updateProfileRequest);
 
         assertThat(result.getName()).isEqualTo(updateProfileRequest.name());
         assertThat(result.getDisplayName()).isEqualTo(updateProfileRequest.displayName());
@@ -162,11 +160,11 @@ class UserServiceTest {
 
     @Test
     @DisplayName("updateProfile - должен выбросить ошибку если пользователь не найден")
-    void updateProfile_ShouldThrowException_WhenUserNotFound() {
+    void updateMyProfile_ShouldThrowException_WhenUserNotFound() {
         when(userRepository.findByUuid(uuid)).thenReturn(Optional.empty());
 
-        assertThatThrownBy(() -> userService.updateProfile(uuid, updateProfileRequest))
-                .isInstanceOf(UserNotFoundException.class);
+        assertThatThrownBy(() -> userService.updateMyProfile(uuid, updateProfileRequest))
+                .isInstanceOf(NotAuthorizedException.class);
     }
 
     @Test
@@ -187,13 +185,13 @@ class UserServiceTest {
 
     @Test
     @DisplayName("delete - должен удалить пользователя когда он найден")
-    void delete_ShouldDeleteUser_WhenUserExists() {
+    void delete_ShouldDeleteMeUser_WhenUserExists() {
         // given
         when(userRepository.existsByUuid(uuid)).thenReturn(true);
         doNothing().when(userRepository).deleteByUuid(uuid);
 
         // when
-        userService.delete(uuid);
+        userService.deleteMe(uuid);
 
         // then
         verify(userRepository).deleteByUuid(uuid);
@@ -201,13 +199,13 @@ class UserServiceTest {
 
     @Test
     @DisplayName("delete - должен выбросить ошибку если пользователь не найден")
-    void delete_ShouldThrowException_WhenUserNotFound() {
+    void delete_Me_ShouldThrowException_WhenUserNotFound() {
         // given
         when(userRepository.existsByUuid(uuid)).thenReturn(false);
 
         // when & then
-        assertThatThrownBy(() -> userService.delete(uuid))
-                .isInstanceOf(UserNotFoundException.class);
+        assertThatThrownBy(() -> userService.deleteMe(uuid))
+                .isInstanceOf(NotAuthorizedException.class);
         
         verify(userRepository, never()).deleteByUuid(any());
     }

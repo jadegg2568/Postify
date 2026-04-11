@@ -14,7 +14,6 @@ import ru.jadegg2568.Postify.response.UserResponse;
 import ru.jadegg2568.Postify.service.UserService;
 
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 @RestController
@@ -51,14 +50,14 @@ public class UserControllerV1 {
     public ResponseEntity<UserResponse> update(
             @PathVariable UUID uuid,
             @Valid @RequestBody UpdateProfileRequest request) {
-        User user = userService.updateProfile(uuid, request);
+        User user = userService.updateMyProfile(uuid, request);
         return ResponseEntity.ok(userMapper.toResponse(user));
     }
 
     // DELETE /{uuid}
     @DeleteMapping("/{uuid}")
     public ResponseEntity<Void> delete(@PathVariable UUID uuid) {
-        userService.delete(uuid);
+        userService.deleteMe(uuid);
         return ResponseEntity.noContent().build();
     }
 

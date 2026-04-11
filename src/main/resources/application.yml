@@ -26,4 +26,6 @@ spring:
     enabled: true
 
 logging:
-  root: LOG
+  level:
+    root: INFO
+    ru.jadegg2568.Postify: DEBUG

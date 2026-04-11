@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.jadegg2568.Postify.entity.User;
 import ru.jadegg2568.Postify.exception.auth.InvalidCredentialsException;
-import ru.jadegg2568.Postify.exception.user.UserAlreadyExistsException;
+import ru.jadegg2568.Postify.exception.auth.NotAuthorizedException;
 import ru.jadegg2568.Postify.exception.user.UserNotFoundException;
 import ru.jadegg2568.Postify.mapper.UserMapper;
 import ru.jadegg2568.Postify.repository.UserRepository;
@@ -14,9 +14,7 @@ import ru.jadegg2568.Postify.request.LoginRequest;
 import ru.jadegg2568.Postify.request.RegisterRequest;
 import ru.jadegg2568.Postify.request.UpdateProfileRequest;
 
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -27,10 +25,6 @@ public class UserService {
 
     @Transactional
     public User register(RegisterRequest request) {
-        if (userRepository.existsByMailOrName(request.mail(), request.name())) {
-            throw new UserAlreadyExistsException();
-        }
-
         User user = userMapper.toEntity(request);
         user.setPasswordHash(passwordEncoder.encode(request.password()));
         userRepository.save(user);
@@ -50,25 +44,25 @@ public class UserService {
     }
 
     @Transactional
-    public User updateProfile(UUID authUuid, UpdateProfileRequest request) {
+    public User updateMyProfile(UUID authUuid, UpdateProfileRequest request) {
         User user = userRepository.findByUuid(authUuid)
-                .orElseThrow(() -> new InvalidCredentialsException(Map.of()));
+                .orElseThrow(NotAuthorizedException::new);
 
         userMapper.updateEntity(request, user);
         return user;
     }
 
+    @Transactional
+    public void deleteMe(UUID authUuid) {
+        if (!userRepository.existsByUuid(authUuid)) {
+            throw new NotAuthorizedException();
+        }
+        userRepository.deleteByUuid(authUuid);
+    }
+
     @Transactional(readOnly = true)
     public List<User> searchUsers(String query) {
         return userRepository.searchByQuery(query);
-    }
-
-    @Transactional
-    public void delete(UUID authUuid) {
-        if (!userRepository.existsByUuid(authUuid)) {
-            throw new UserNotFoundException();
-        }
-        userRepository.deleteByUuid(authUuid);
     }
 
     public User getByUuid(UUID uuid) {
