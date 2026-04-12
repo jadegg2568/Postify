@@ -1,8 +1,6 @@
 package ru.jadegg2568.Postify.mapper;
 
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.MappingTarget;
+import org.mapstruct.*;
 import ru.jadegg2568.Postify.entity.User;
 import ru.jadegg2568.Postify.request.RegisterRequest;
 import ru.jadegg2568.Postify.request.UpdateProfileRequest;
@@ -25,5 +23,6 @@ public interface UserMapper {
     @Mapping(target = "passwordHash", ignore = true) // split
     @Mapping(target = "photoKey", ignore = true)     // split
     @Mapping(target = "createdAt", ignore = true)
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE) // ignore null values
     void updateEntity(UpdateProfileRequest request, @MappingTarget User user);
 }

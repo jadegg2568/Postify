@@ -45,8 +45,8 @@ public class UserControllerV1 {
         return ResponseEntity.ok(userMapper.toResponse(user));
     }
 
-    // PUT /{uuid}
-    @PutMapping("/{uuid}")
+    // Patch /{uuid}
+    @PatchMapping("/{uuid}")
     public ResponseEntity<UserResponse> update(
             @PathVariable UUID uuid,
             @Valid @RequestBody UpdateProfileRequest request) {
