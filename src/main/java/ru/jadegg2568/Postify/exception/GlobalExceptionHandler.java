@@ -85,7 +85,7 @@ public class GlobalExceptionHandler {
         if (ex.getMessage().contains("name"))
             details.put("name", ParamError.BUSY);
 
-        ApiError error = new ApiError(HttpStatus.CONFLICT, "ERROR_OCCURRED", "Conflict credentials", details);
+        ApiError error = new ApiError(HttpStatus.CONFLICT, "CREDENTIALS_CONFLICT", "Conflict credentials", details);
         return new ResponseEntity<>(error, error.status());
     }
 
