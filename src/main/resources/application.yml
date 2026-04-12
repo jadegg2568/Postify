@@ -1,0 +1,31 @@
+spring:
+  application:
+    name: Postify
+
+  jackson:
+    default-property-inclusion: non_null
+  
+  datasource:
+    url: jdbc:postgresql://localhost:5432/postify
+    username: postify_user
+    password: postify_pass
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      connection-timeout: 30000
+      maximum-pool-size: 10
+      pool-name: PostifyHikariPool
+
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+
+  flyway:
+    enabled: true
+
+logging:
+  level:
+    root: INFO
+    ru.jadegg2568.Postify: DEBUG
