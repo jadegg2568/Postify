@@ -86,10 +86,4 @@ public class UserService {
         return userRepository.findByUuid(uuid)
                 .orElseThrow(UserNotFoundException::new);
     }
-
-    public User getByName(String name) {
-        log.debug("Getting user by name: {}", name);
-        return userRepository.findByName(name)
-                .orElseThrow(UserNotFoundException::new);
-    }
 }

@@ -45,13 +45,6 @@ public class UserControllerV1 {
         return ResponseEntity.ok(userMapper.toResponse(user));
     }
 
-    // GET /name?={name}
-    @GetMapping("/")
-    public ResponseEntity<UserResponse> getUserByName(@RequestParam String name) {
-        User user = userService.getByName(name);
-        return ResponseEntity.ok(userMapper.toResponse(user));
-    }
-
     // Patch /{uuid}
     @PatchMapping("/{uuid}")
     public ResponseEntity<UserResponse> update(
