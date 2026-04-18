@@ -71,7 +71,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(NoResourceFoundException.class)
     public ResponseEntity<ErrorResponse> handleNotFoundPath(NoResourceFoundException ex) {
-        ErrorResponse error = new ErrorResponse(HttpStatus.NOT_FOUND, "NOT_FOUND", "Not found for that path");
+        ErrorResponse error = new ErrorResponse(HttpStatus.BAD_REQUEST, "BAD_REQUEST", "Not found for that path");
         log.warn("NotFoundPath Error: {}", ex.toString());
         return new ResponseEntity<>(error, error.status());
     }
