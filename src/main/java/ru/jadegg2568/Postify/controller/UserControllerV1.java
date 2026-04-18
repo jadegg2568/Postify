@@ -38,13 +38,6 @@ public class UserControllerV1 {
         return ResponseEntity.ok(userMapper.toResponse(user));
     }
 
-    // GET /{uuid}
-    @GetMapping("/{uuid}")
-    public ResponseEntity<UserResponse> getUserByUuid(@PathVariable UUID uuid) {
-        User user = userService.getByUuid(uuid);
-        return ResponseEntity.ok(userMapper.toResponse(user));
-    }
-
     // Patch /{uuid}
     @PatchMapping("/{uuid}")
     public ResponseEntity<UserResponse> update(
@@ -59,6 +52,20 @@ public class UserControllerV1 {
     public ResponseEntity<Void> delete(@PathVariable UUID uuid) {
         userService.deleteMe(uuid);
         return ResponseEntity.noContent().build();
+    }
+
+    // GET /{uuid}WE
+    @GetMapping("/{uuid}")
+    public ResponseEntity<UserResponse> getUserByUuid(@PathVariable UUID uuid) {
+        User user = userService.getByUuid(uuid);
+        return ResponseEntity.ok(userMapper.toResponse(user));
+    }
+
+    // GET ?name={name}
+    @GetMapping("")
+    public ResponseEntity<UserResponse> getUserByName(@RequestParam String name) {
+        User user = userService.getByName(name);
+        return ResponseEntity.ok(userMapper.toResponse(user));
     }
 
     // GET /search?q={query}

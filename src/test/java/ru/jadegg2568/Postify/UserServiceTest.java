@@ -233,4 +233,28 @@ class UserServiceTest {
         assertThatThrownBy(() -> userService.getByUuid(uuid))
                 .isInstanceOf(UserNotFoundException.class);
     }
+
+    @Test
+    @DisplayName("getByName - должен вернуть пользователя когда он найден")
+    void getByName_ShouldReturnUser_WhenUserExists() {
+        // given
+        when(userRepository.findByName(user.getName())).thenReturn(Optional.of(user));
+
+        // when
+        User result = userService.getByName(user.getName());
+
+        // then
+        assertThat(result).isEqualTo(user);
+    }
+
+    @Test
+    @DisplayName("getByName - должен выбросить ошибку если пользователь не найден по названию")
+    void getByName_ShouldThrowException_WhenUserNotFound() {
+        // given
+        when(userRepository.findByName(user.getName())).thenReturn(Optional.empty());
+
+        // when & then
+        assertThatThrownBy(() -> userService.getByName(user.getName()))
+                .isInstanceOf(UserNotFoundException.class);
+    }
 }
