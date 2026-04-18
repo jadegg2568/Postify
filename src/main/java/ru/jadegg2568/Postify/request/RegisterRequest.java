@@ -1,5 +1,6 @@
 package ru.jadegg2568.Postify.request;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.annotation.Nullable;
 import jakarta.validation.constraints.*;
 import ru.jadegg2568.Postify.exception.param.ParamCodes;
@@ -10,6 +11,7 @@ public record RegisterRequest(
         @Email(message = ParamCodes.NOT_CORRECT)
         @Size(min = UserParamLimits.Min.MAIL, max = UserParamLimits.Max.MAIL,
                 message = ParamCodes.INVALID_SIZE)
+        @Schema(description = "User mail", example = "username@mail.com")
         String mail,
 
         @NotBlank(message = ParamCodes.EMPTY)
@@ -19,21 +21,25 @@ public record RegisterRequest(
         )
         @Size(min = UserParamLimits.Min.PASSWORD, max = UserParamLimits.Max.PASSWORD,
                 message = ParamCodes.INVALID_SIZE)
+        @Schema(description = "User password", example = "123456")
         String password,
 
         @NotBlank(message = ParamCodes.EMPTY)
         @Size(min = UserParamLimits.Min.NAME, max = UserParamLimits.Max.NAME,
                 message = ParamCodes.INVALID_SIZE)
+        @Schema(description = "Username", example = "username")
         String name,
 
         @NotBlank(message = ParamCodes.EMPTY)
         @Size(min = UserParamLimits.Min.DISPLAY_NAME, max = UserParamLimits.Max.DISPLAY_NAME,
                 message = ParamCodes.INVALID_SIZE)
+        @Schema(description = "User display name", example = "TestUser")
         String displayName,
 
         @Nullable
         @Size(min = UserParamLimits.Min.DESCRIPTION, max = UserParamLimits.Max.DESCRIPTION,
                 message = ParamCodes.INVALID_SIZE)
+        @Schema(description = "User description", example = "I'm testuser, hello!")
         String description
 ) {
 }
