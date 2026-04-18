@@ -1,5 +1,6 @@
 package ru.jadegg2568.Postify.request;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.annotation.Nullable;
 import jakarta.validation.constraints.Size;
 import ru.jadegg2568.Postify.exception.param.ParamCodes;

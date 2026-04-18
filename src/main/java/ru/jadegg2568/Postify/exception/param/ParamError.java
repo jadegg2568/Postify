@@ -9,7 +9,8 @@ public enum ParamError {
     BUSY(ParamCodes.BUSY),
     INVALID_CHARACTERS(ParamCodes.INVALID_CHARACTERS),
     NOT_CORRECT(ParamCodes.NOT_CORRECT),
-    TOO_LONG(ParamCodes.INVALID_SIZE);
+    TOO_LONG(ParamCodes.INVALID_SIZE),
+    EMPTY(ParamCodes.EMPTY);
 
     private final String code;
 
