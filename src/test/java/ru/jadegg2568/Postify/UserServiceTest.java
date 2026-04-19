@@ -235,30 +235,26 @@ class UserServiceTest {
     }
 
     @Test
-    @DisplayName("getByName - должен вернуть пользователя, если имя существует")
-    void getByName_ShouldReturnUser_WhenNameExists() {
+    @DisplayName("getByName - должен вернуть пользователя когда он найден")
+    void getByName_ShouldReturnUser_WhenUserExists() {
         // given
-        String name = "testuser";
-        when(userRepository.findByName(name)).thenReturn(Optional.of(user));
+        when(userRepository.findByName(user.getName())).thenReturn(Optional.of(user));
 
         // when
-        User result = userService.getByName(name);
+        User result = userService.getByName(user.getName());
 
         // then
-        assertThat(result).isNotNull();
-        assertThat(result.getName()).isEqualTo(name);
-        verify(userRepository).findByName(name);
+        assertThat(result).isEqualTo(user);
     }
 
     @Test
-    @DisplayName("getByName - должен выбросить UserNotFoundException, если имени нет")
-    void getByName_ShouldThrowException_WhenNameDoesNotExist() {
+    @DisplayName("getByName - должен выбросить ошибку если пользователь не найден по названию")
+    void getByName_ShouldThrowException_WhenUserNotFound() {
         // given
-        String name = "nonexistent";
-        when(userRepository.findByName(name)).thenReturn(Optional.empty());
+        when(userRepository.findByName(user.getName())).thenReturn(Optional.empty());
 
         // when & then
-        assertThatThrownBy(() -> userService.getByName(name))
+        assertThatThrownBy(() -> userService.getByName(user.getName()))
                 .isInstanceOf(UserNotFoundException.class);
     }
 }

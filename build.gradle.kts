@@ -28,8 +28,7 @@ dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-security")
 	implementation("org.springframework.boot:spring-boot-starter-validation")
 	implementation("org.springframework.boot:spring-boot-starter-web")
-	implementation("org.flywaydb:flyway-core")
-	implementation("org.flywaydb:flyway-database-postgresql")
+	developmentOnly("org.springframework.boot:spring-boot-devtools")
 
 	// Lombok
 	compileOnly("org.projectlombok:lombok")
@@ -39,11 +38,16 @@ dependencies {
 	implementation("org.mapstruct:mapstruct:1.5.5.Final")
 	annotationProcessor("org.mapstruct:mapstruct-processor:1.5.5.Final")
 
-	// Lombok + MapStruct integration (важно для совместной работы)
+	// Lombok + MapStruct integration
 	annotationProcessor("org.projectlombok:lombok-mapstruct-binding:0.2.0")
 
-	developmentOnly("org.springframework.boot:spring-boot-devtools")
+	// Databases + Migrations
 	runtimeOnly("org.postgresql:postgresql")
+	implementation("org.flywaydb:flyway-core")
+	implementation("org.flywaydb:flyway-database-postgresql")
+
+	// Documentation
+	implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.9")
 
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 	testImplementation("org.springframework.boot:spring-boot-testcontainers")

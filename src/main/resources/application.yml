@@ -2,6 +2,12 @@ spring:
   application:
     name: Postify
 
+  devtools:
+    restart:
+      enabled: true
+    livereload:
+      enabled: true
+
   jackson:
     default-property-inclusion: non_null
   

@@ -1,5 +1,9 @@
 package ru.jadegg2568.Postify.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -16,6 +20,15 @@ import ru.jadegg2568.Postify.service.UserService;
 import java.util.List;
 import java.util.UUID;
 
+@Tag(
+        name = "User Controller V1",
+        description = "CRUD operations for users, authentication endpoints, and user search API"
+)
+@ApiResponses({
+        @ApiResponse(responseCode = "500", description = "Internal server error"),
+        @ApiResponse(responseCode = "401", description = "Unauthorized"),
+        @ApiResponse(responseCode = "403", description = "Forbidden")
+})
 @RestController
 @RequestMapping("/v1/users")
 @RequiredArgsConstructor
@@ -24,35 +37,48 @@ public class UserControllerV1 {
     private final UserService userService;
     private final UserMapper userMapper;
 
+    // public
     // POST /register
+    @Operation(
+            summary = "Register new user",
+            description = "Creates a new user account with unique login/email constraints"
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "201", description = "User successfully registered"),
+            @ApiResponse(responseCode = "400", description = "Invalid request data (validation failed)"),
+            @ApiResponse(responseCode = "409", description = "User already exists with given unique fields")
+    })
     @PostMapping("/register")
     public ResponseEntity<UserResponse> register(@Valid @RequestBody RegisterRequest request) {
         User user = userService.register(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(userMapper.toResponse(user));
     }
 
+    // public
     // POST /login
+    @Operation(
+            summary = "Login user",
+            description = "Authenticates user using login and password"
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Login successful"),
+            @ApiResponse(responseCode = "400", description = "Invalid credentials format or wrong data")
+    })
     @PostMapping("/login")
     public ResponseEntity<UserResponse> login(@Valid @RequestBody LoginRequest request) {
         User user = userService.login(request);
         return ResponseEntity.ok(userMapper.toResponse(user));
     }
 
-    // GET /{uuid}
-    @GetMapping("/{uuid}")
-    public ResponseEntity<UserResponse> getUserByUuid(@PathVariable UUID uuid) {
-        User user = userService.getByUuid(uuid);
-        return ResponseEntity.ok(userMapper.toResponse(user));
-    }
-
-    // GET /name?={name}
-    @GetMapping("/")
-    public ResponseEntity<UserResponse> getUserByName(@RequestParam String name) {
-        User user = userService.getByName(name);
-        return ResponseEntity.ok(userMapper.toResponse(user));
-    }
-
     // Patch /{uuid}
+    @Operation(
+            summary = "Update user profile",
+            description = "Updates user profile data for authenticated user"
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Profile updated successfully"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized (invalid or missing auth)")
+    })
     @PatchMapping("/{uuid}")
     public ResponseEntity<UserResponse> update(
             @PathVariable UUID uuid,
@@ -62,13 +88,59 @@ public class UserControllerV1 {
     }
 
     // DELETE /{uuid}
+    @Operation(
+            summary = "Delete user",
+            description = "Deletes user account by UUID"
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "204", description = "User deleted successfully"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized access")
+    })
     @DeleteMapping("/{uuid}")
     public ResponseEntity<Void> delete(@PathVariable UUID uuid) {
         userService.deleteMe(uuid);
         return ResponseEntity.noContent().build();
     }
 
+    // public
+    // GET /{uuid}WE
+    @Operation(
+            summary = "Get user by UUID",
+            description = "Returns user information by unique identifier"
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "User found"),
+            @ApiResponse(responseCode = "404", description = "User not found")
+    })
+    @GetMapping("/{uuid}")
+    public ResponseEntity<UserResponse> getUserByUuid(@PathVariable UUID uuid) {
+        User user = userService.getByUuid(uuid);
+        return ResponseEntity.ok(userMapper.toResponse(user));
+    }
+
+    // public
+    // GET ?name={name}
+    @Operation(
+            summary = "Get user by name",
+            description = "Finds user by unique username"
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "User found"),
+            @ApiResponse(responseCode = "404", description = "User not found")
+    })
+    @GetMapping("")
+    public ResponseEntity<UserResponse> getUserByName(@RequestParam String name) {
+        User user = userService.getByName(name);
+        return ResponseEntity.ok(userMapper.toResponse(user));
+    }
+
+    // public
     // GET /search?q={query}
+    @Operation(
+            summary = "Search users",
+            description = "Search users by partial query string"
+    )
+    @ApiResponse(responseCode = "200", description = "List of matching users")
     @GetMapping("/search")
     public ResponseEntity<List<UserResponse>> searchUsers(@RequestParam String q) {
         List<User> users = userService.searchUsers(q);
