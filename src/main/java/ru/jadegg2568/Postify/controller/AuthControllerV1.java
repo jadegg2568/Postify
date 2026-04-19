@@ -70,23 +70,6 @@ public class AuthControllerV1 {
         return ResponseEntity.ok(userMapper.toResponse(user));
     }
 
-    // Patch /{uuid}
-    @Operation(
-            summary = "Update user profile",
-            description = "Updates user profile data for authenticated user"
-    )
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Profile updated successfully"),
-            @ApiResponse(responseCode = "401", description = "Unauthorized (invalid or missing auth)")
-    })
-    @PatchMapping("/{uuid}")
-    public ResponseEntity<UserResponse> update(
-            @PathVariable UUID uuid,
-            @Valid @RequestBody UpdateProfileRequest request) {
-        User user = userService.updateMyProfile(uuid, request);
-        return ResponseEntity.ok(userMapper.toResponse(user));
-    }
-
     // DELETE /{uuid}
     @Operation(
             summary = "Delete user",
