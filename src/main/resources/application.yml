@@ -35,3 +35,8 @@ logging:
   level:
     root: INFO
     ru.jadegg2568.Postify: DEBUG
+
+postify:
+  jwt:
+    secretKey: yEk<Cjzh%oAwAR9y0:&Uq|AmS$F|A*yw
+    expirationTime: 7d
