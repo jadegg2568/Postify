@@ -9,13 +9,15 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import ru.jadegg2568.Postify.entity.User;
+import ru.jadegg2568.Postify.exception.auth.NoAccessException;
 import ru.jadegg2568.Postify.mapper.UserMapper;
 import ru.jadegg2568.Postify.request.LoginRequest;
 import ru.jadegg2568.Postify.request.RegisterRequest;
-import ru.jadegg2568.Postify.request.UpdateProfileRequest;
-import ru.jadegg2568.Postify.response.UserResponse;
+import ru.jadegg2568.Postify.response.TokenResponse;
+import ru.jadegg2568.Postify.security.UuidUserDetails;
 import ru.jadegg2568.Postify.service.UserService;
 
 import java.util.UUID;
@@ -49,9 +51,10 @@ public class AuthControllerV1 {
             @ApiResponse(responseCode = "409", description = "User already exists with given unique fields")
     })
     @PostMapping("/register")
-    public ResponseEntity<UserResponse> register(@Valid @RequestBody RegisterRequest request) {
+    public ResponseEntity<TokenResponse> register(@Valid @RequestBody RegisterRequest request) {
         User user = userService.register(request);
-        return ResponseEntity.status(HttpStatus.CREATED).body(userMapper.toResponse(user));
+        String token = userService.generateToken(user);
+        return ResponseEntity.status(HttpStatus.CREATED).body(new TokenResponse(token, user.getUuid(), userMapper.toResponse(user)));
     }
 
     // public
@@ -65,9 +68,10 @@ public class AuthControllerV1 {
             @ApiResponse(responseCode = "400", description = "Invalid credentials format or wrong data")
     })
     @PostMapping("/login")
-    public ResponseEntity<UserResponse> login(@Valid @RequestBody LoginRequest request) {
+    public ResponseEntity<TokenResponse> login(@Valid @RequestBody LoginRequest request) {
         User user = userService.login(request);
-        return ResponseEntity.ok(userMapper.toResponse(user));
+        String token = userService.generateToken(user);
+        return ResponseEntity.status(HttpStatus.CREATED).body(new TokenResponse(token, user.getUuid(), userMapper.toResponse(user)));
     }
 
     // DELETE /{uuid}
@@ -80,8 +84,11 @@ public class AuthControllerV1 {
             @ApiResponse(responseCode = "401", description = "Unauthorized access")
     })
     @DeleteMapping("/{uuid}")
-    public ResponseEntity<Void> delete(@PathVariable UUID uuid) {
-        userService.deleteMe(uuid);
+    public ResponseEntity<Void> delete(@AuthenticationPrincipal UuidUserDetails details, @PathVariable UUID uuid) {
+        if (!details.role().equals("ROLE_ADMIN") && !details.uuid().equals(uuid)) {
+            throw new NoAccessException();
+        }
+        userService.delete(uuid);
         return ResponseEntity.noContent().build();
     }
 }
