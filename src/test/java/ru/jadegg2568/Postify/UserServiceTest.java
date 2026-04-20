@@ -16,6 +16,8 @@ import ru.jadegg2568.Postify.exception.auth.NotAuthorizedException;
 import ru.jadegg2568.Postify.exception.user.UserNotFoundException;
 import ru.jadegg2568.Postify.mapper.UserMapper;
 import ru.jadegg2568.Postify.repository.UserRepository;
+import ru.jadegg2568.Postify.security.JwtManager;
+import ru.jadegg2568.Postify.security.Role;
 import ru.jadegg2568.Postify.service.UserService;
 
 import java.util.List;
@@ -39,12 +41,14 @@ class UserServiceTest {
     @Mock
     private PasswordEncoder passwordEncoder;
 
+    @Mock
+    private JwtManager jwtManager;
+
     @InjectMocks
     private UserService userService;
 
     private UUID uuid;
     private User user;
-    private User updatedUser;
     private RegisterRequest registerRequest;
     private LoginRequest loginRequest;
     private UpdateProfileRequest updateProfileRequest;
@@ -151,7 +155,7 @@ class UserServiceTest {
             return null;
         }).when(userMapper).updateEntity(any(), any());
 
-        User result = userService.updateMyProfile(uuid, updateProfileRequest);
+        User result = userService.updateProfile(uuid, updateProfileRequest);
 
         assertThat(result.getName()).isEqualTo(updateProfileRequest.name());
         assertThat(result.getDisplayName()).isEqualTo(updateProfileRequest.displayName());
@@ -163,7 +167,7 @@ class UserServiceTest {
     void updateMyProfile_ShouldThrowException_WhenUserNotFound() {
         when(userRepository.findByUuid(uuid)).thenReturn(Optional.empty());
 
-        assertThatThrownBy(() -> userService.updateMyProfile(uuid, updateProfileRequest))
+        assertThatThrownBy(() -> userService.updateProfile(uuid, updateProfileRequest))
                 .isInstanceOf(NotAuthorizedException.class);
     }
 
@@ -191,7 +195,7 @@ class UserServiceTest {
         doNothing().when(userRepository).deleteByUuid(uuid);
 
         // when
-        userService.deleteMe(uuid);
+        userService.delete(uuid);
 
         // then
         verify(userRepository).deleteByUuid(uuid);
@@ -199,12 +203,12 @@ class UserServiceTest {
 
     @Test
     @DisplayName("delete - должен выбросить ошибку если пользователь не найден")
-    void delete_Me_ShouldThrowException_WhenUserNotFound() {
+    void delete_ShouldThrowException_WhenUserNotFound() {
         // given
         when(userRepository.existsByUuid(uuid)).thenReturn(false);
 
         // when & then
-        assertThatThrownBy(() -> userService.deleteMe(uuid))
+        assertThatThrownBy(() -> userService.delete(uuid))
                 .isInstanceOf(NotAuthorizedException.class);
         
         verify(userRepository, never()).deleteByUuid(any());
@@ -256,5 +260,19 @@ class UserServiceTest {
         // when & then
         assertThatThrownBy(() -> userService.getByName(user.getName()))
                 .isInstanceOf(UserNotFoundException.class);
+    }
+
+    @Test
+    @DisplayName("generateToken - должен сгенерировать токен")
+    void generateToken_ShouldReturnToken() {
+        // given
+        String token = "token";
+        when(jwtManager.toToken(user.getUuid(), Role.USER)).thenReturn(token);
+
+        // when
+        String result = userService.generateToken(user);
+
+        // then
+        assertThat(result).isEqualTo(token);
     }
 }

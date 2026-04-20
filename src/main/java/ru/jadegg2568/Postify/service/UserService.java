@@ -14,6 +14,8 @@ import ru.jadegg2568.Postify.repository.UserRepository;
 import ru.jadegg2568.Postify.request.LoginRequest;
 import ru.jadegg2568.Postify.request.RegisterRequest;
 import ru.jadegg2568.Postify.request.UpdateProfileRequest;
+import ru.jadegg2568.Postify.security.JwtManager;
+import ru.jadegg2568.Postify.security.Role;
 
 import java.util.List;
 import java.util.UUID;
@@ -25,14 +27,17 @@ public class UserService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
+    private final JwtManager jwtManager;
 
     @Transactional
     public User register(RegisterRequest request) {
         log.debug("Registering user with email: {}", request.mail());
         User user = userMapper.toEntity(request);
         user.setPasswordHash(passwordEncoder.encode(request.password()));
+
         userRepository.save(user);
         log.info("User registered successfully with UUID: {}", user.getUuid());
+
         return user;
     }
 
@@ -52,25 +57,28 @@ public class UserService {
     }
 
     @Transactional
-    public User updateMyProfile(UUID authUuid, UpdateProfileRequest request) {
-        log.debug("Updating profile for user UUID: {}", authUuid);
-        User user = userRepository.findByUuid(authUuid)
+    public User updateProfile(UUID uuid, UpdateProfileRequest request) {
+        log.debug("Updating profile for user UUID: {}", uuid);
+        User user = userRepository.findByUuid(uuid)
                 .orElseThrow(NotAuthorizedException::new);
 
         userMapper.updateEntity(request, user);
-        log.info("Profile updated for user UUID: {}", authUuid);
+        log.info("Profile updated for user UUID: {}", uuid);
+
         return user;
     }
 
     @Transactional
-    public void deleteMe(UUID authUuid) {
-        log.debug("Delete request for user UUID: {}", authUuid);
-        if (!userRepository.existsByUuid(authUuid)) {
-            log.warn("Delete failed - user not found: {}", authUuid);
+    public void delete(UUID uuid) {
+        log.debug("Delete request for user UUID: {}", uuid)
+        ;
+        if (!userRepository.existsByUuid(uuid)) {
+            log.warn("Delete failed - user not found: {}", uuid);
             throw new NotAuthorizedException();
         }
-        userRepository.deleteByUuid(authUuid);
-        log.info("User deleted: {}", authUuid);
+
+        userRepository.deleteByUuid(uuid);
+        log.info("User deleted: {}", uuid);
     }
 
     @Transactional(readOnly = true)
@@ -91,5 +99,9 @@ public class UserService {
         log.debug("Getting user by name: {}", name);
         return userRepository.findByName(name)
                 .orElseThrow(UserNotFoundException::new);
+    }
+
+    public String generateToken(User user) {
+        return jwtManager.toToken(user.getUuid(), Role.USER);
     }
 }
