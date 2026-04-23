@@ -15,7 +15,7 @@ import ru.jadegg2568.Postify.request.LoginRequest;
 import ru.jadegg2568.Postify.request.RegisterRequest;
 import ru.jadegg2568.Postify.request.UpdateProfileRequest;
 import ru.jadegg2568.Postify.security.JwtManager;
-import ru.jadegg2568.Postify.security.Role;
+import ru.jadegg2568.Postify.entity.Role;
 
 import java.util.List;
 import java.util.UUID;

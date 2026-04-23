@@ -1,4 +1,4 @@
-package ru.jadegg2568.Postify.security;
+package ru.jadegg2568.Postify.entity;
 
 import lombok.Getter;
 

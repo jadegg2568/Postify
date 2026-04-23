@@ -6,6 +6,8 @@ import io.jsonwebtoken.security.Keys;
 import org.jspecify.annotations.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import ru.jadegg2568.Postify.config.JwtProperties;
+import ru.jadegg2568.Postify.entity.Role;
 
 import javax.crypto.SecretKey;
 import java.util.Date;

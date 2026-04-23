@@ -1,4 +1,4 @@
-package ru.jadegg2568.Postify.security;
+package ru.jadegg2568.Postify.config;
 
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
