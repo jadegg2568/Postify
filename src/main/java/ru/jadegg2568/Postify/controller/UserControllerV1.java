@@ -59,8 +59,26 @@ public class UserControllerV1 {
         return ResponseEntity.ok(userMapper.toResponse(user));
     }
 
+    // DELETE /{uuid}
+    @Operation(
+            summary = "Delete user",
+            description = "Deletes user account by UUID"
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "204", description = "User deleted successfully"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized access")
+    })
+    @DeleteMapping("/{uuid}")
+    public ResponseEntity<Void> delete(@AuthenticationPrincipal UuidUserDetails details, @PathVariable UUID uuid) {
+        if (!details.rights().isAdmin() && !details.uuid().equals(uuid)) {
+            throw new NoAccessException();
+        }
+        userService.delete(uuid);
+        return ResponseEntity.noContent().build();
+    }
+
     // public
-    // GET /{uuid}WE
+    // GET /{uuid}
     @Operation(
             summary = "Get user by UUID",
             description = "Returns user information by unique identifier"

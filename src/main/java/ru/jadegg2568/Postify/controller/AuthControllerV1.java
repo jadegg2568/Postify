@@ -19,6 +19,7 @@ import ru.jadegg2568.Postify.request.LoginRequest;
 import ru.jadegg2568.Postify.request.RegisterRequest;
 import ru.jadegg2568.Postify.response.TokenResponse;
 import ru.jadegg2568.Postify.security.UuidUserDetails;
+import ru.jadegg2568.Postify.service.AuthService;
 import ru.jadegg2568.Postify.service.UserService;
 
 import java.util.UUID;
@@ -37,7 +38,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class AuthControllerV1 {
 
-    private final UserService userService;
+    private final AuthService authService;
     private final UserMapper userMapper;
 
     // public
@@ -53,8 +54,8 @@ public class AuthControllerV1 {
     })
     @PostMapping("/register")
     public ResponseEntity<TokenResponse> register(@Valid @RequestBody RegisterRequest request) {
-        User user = userService.register(request);
-        String token = userService.generateToken(user);
+        User user = authService.register(request);
+        String token = authService.generateToken(user);
         return ResponseEntity.status(HttpStatus.CREATED).body(new TokenResponse(token, user.getUuid(), userMapper.toResponse(user)));
     }
 
@@ -70,26 +71,8 @@ public class AuthControllerV1 {
     })
     @PostMapping("/login")
     public ResponseEntity<TokenResponse> login(@Valid @RequestBody LoginRequest request) {
-        User user = userService.login(request);
-        String token = userService.generateToken(user);
+        User user = authService.login(request);
+        String token = authService.generateToken(user);
         return ResponseEntity.status(HttpStatus.CREATED).body(new TokenResponse(token, user.getUuid(), userMapper.toResponse(user)));
-    }
-
-    // DELETE /{uuid}
-    @Operation(
-            summary = "Delete user",
-            description = "Deletes user account by UUID"
-    )
-    @ApiResponses({
-            @ApiResponse(responseCode = "204", description = "User deleted successfully"),
-            @ApiResponse(responseCode = "401", description = "Unauthorized access")
-    })
-    @DeleteMapping("/{uuid}")
-    public ResponseEntity<Void> delete(@AuthenticationPrincipal UuidUserDetails details, @PathVariable UUID uuid) {
-        if (!details.rights().isAdmin() && !details.uuid().equals(uuid)) {
-            throw new NoAccessException();
-        }
-        userService.delete(uuid);
-        return ResponseEntity.noContent().build();
     }
 }

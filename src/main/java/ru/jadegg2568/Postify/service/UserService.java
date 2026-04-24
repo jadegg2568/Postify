@@ -26,35 +26,6 @@ import java.util.UUID;
 public class UserService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
-    private final PasswordEncoder passwordEncoder;
-    private final JwtManager jwtManager;
-
-    @Transactional
-    public User register(RegisterRequest request) {
-        log.debug("Registering user with email: {}", request.mail());
-        User user = userMapper.toEntity(request);
-        user.setPasswordHash(passwordEncoder.encode(request.password()));
-
-        userRepository.save(user);
-        log.info("User registered successfully with UUID: {}", user.getUuid());
-
-        return user;
-    }
-
-    @Transactional(readOnly = true)
-    public User login(LoginRequest request) {
-        log.debug("Login attempt for login: {}", request.login());
-        User user = userRepository.findByLogin(request.login())
-                .orElse(null);
-
-        if (user == null || !passwordEncoder.matches(request.password(), user.getPasswordHash())) {
-            log.info("Failed login attempt for login: {}", request.login());
-            throw new InvalidCredentialsException();
-        }
-
-        log.info("User logged in successfully: {}", user.getUuid());
-        return user;
-    }
 
     @Transactional
     public User updateProfile(UUID uuid, UpdateProfileRequest request) {
@@ -99,9 +70,5 @@ public class UserService {
         log.debug("Getting user by name: {}", name);
         return userRepository.findByName(name)
                 .orElseThrow(UserNotFoundException::new);
-    }
-
-    public String generateToken(User user) {
-        return jwtManager.toToken(user.getUuid(), Rights.USER.getAuthorities());
     }
 }
