@@ -1,15 +1,15 @@
 package ru.jadegg2568.Postify.entity;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @Getter
+@AllArgsConstructor
 public enum Role {
-    USER("ROLE_USER"),
-    ADMIN("ROLE_ADMIN");
+    USER,
+    ADMIN;
 
-    private final String str;
-
-    Role(String str) {
-        this.str = str;
+    public String getAuthority() {
+        return "ROLE_" + name();
     }
 }

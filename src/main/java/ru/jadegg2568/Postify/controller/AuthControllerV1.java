@@ -11,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import ru.jadegg2568.Postify.entity.Role;
 import ru.jadegg2568.Postify.entity.User;
 import ru.jadegg2568.Postify.exception.auth.NoAccessException;
 import ru.jadegg2568.Postify.mapper.UserMapper;
@@ -85,7 +86,7 @@ public class AuthControllerV1 {
     })
     @DeleteMapping("/{uuid}")
     public ResponseEntity<Void> delete(@AuthenticationPrincipal UuidUserDetails details, @PathVariable UUID uuid) {
-        if (!details.role().equals("ROLE_ADMIN") && !details.uuid().equals(uuid)) {
+        if (!details.role().equals(Role.ADMIN.getAuthority()) && !details.uuid().equals(uuid)) {
             throw new NoAccessException();
         }
         userService.delete(uuid);

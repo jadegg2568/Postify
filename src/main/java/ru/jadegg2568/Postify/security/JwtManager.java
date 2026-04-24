@@ -23,10 +23,10 @@ public class JwtManager {
         return Keys.hmacShaKeyFor(jwtProperties.getSecretKey().getBytes());
     }
 
-    public String toToken(UUID uuid, Role role) {
+    public String toToken(UUID uuid, String role) {
         return Jwts.builder()
                 .subject(uuid.toString())
-                .claim("role", role.getStr()) // role
+                .claim("role", role)
                 .issuedAt(new Date())
                 .expiration(new Date(System.currentTimeMillis() + jwtProperties.getExpirationTime().toMillis())) // date of expiration
                 .signWith(getSecretKey())
