@@ -7,10 +7,10 @@ import org.jspecify.annotations.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import ru.jadegg2568.Postify.config.JwtProperties;
-import ru.jadegg2568.Postify.entity.Role;
 
 import javax.crypto.SecretKey;
 import java.util.Date;
+import java.util.Set;
 import java.util.UUID;
 
 @Component
@@ -23,10 +23,10 @@ public class JwtManager {
         return Keys.hmacShaKeyFor(jwtProperties.getSecretKey().getBytes());
     }
 
-    public String toToken(UUID uuid, String role) {
+    public String toToken(UUID uuid, Set<String> roles) {
         return Jwts.builder()
                 .subject(uuid.toString())
-                .claim("role", role)
+                .claim("roles", roles)
                 .issuedAt(new Date())
                 .expiration(new Date(System.currentTimeMillis() + jwtProperties.getExpirationTime().toMillis())) // date of expiration
                 .signWith(getSecretKey())
