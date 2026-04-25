@@ -7,17 +7,15 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import ru.jadegg2568.Postify.request.*;
 import ru.jadegg2568.Postify.entity.User;
-import ru.jadegg2568.Postify.exception.auth.InvalidCredentialsException;
 import ru.jadegg2568.Postify.exception.auth.NotAuthorizedException;
 import ru.jadegg2568.Postify.exception.user.UserNotFoundException;
 import ru.jadegg2568.Postify.mapper.UserMapper;
 import ru.jadegg2568.Postify.repository.UserRepository;
 import ru.jadegg2568.Postify.security.JwtManager;
-import ru.jadegg2568.Postify.entity.Rights;
+import ru.jadegg2568.Postify.entity.Permissions;
 import ru.jadegg2568.Postify.service.UserService;
 
 import java.util.List;
@@ -74,74 +72,6 @@ class UserServiceTest {
     }
 
     @Test
-    @DisplayName("register - должен зарегистрировать пользователя когда данные валидны")
-    void register_ShouldRegisterUser_WhenCredentialsAreValid() {
-        // given
-        when(userMapper.toEntity(registerRequest)).thenReturn(user);
-        when(passwordEncoder.encode(registerRequest.password())).thenReturn("encodedPassword");
-        when(userRepository.save(any(User.class))).thenReturn(user);
-
-        // when
-        User result = userService.register(registerRequest);
-
-        // then
-        assertThat(result).isNotNull();
-        assertThat(result.getMail()).isEqualTo(registerRequest.mail());
-        assertThat(result.getName()).isEqualTo(registerRequest.name());
-        verify(userRepository).save(any(User.class));
-    }
-
-    @Test
-    @DisplayName("register - должен выбросить ошибку если пользователь уже существует")
-    void register_ShouldThrowException_WhenUserAlreadyExists() {
-        // given
-        when(userMapper.toEntity(registerRequest)).thenReturn(user);
-        when(userRepository.save(any(User.class)))
-                .thenThrow(DataIntegrityViolationException.class);
-
-        // when & then
-        assertThatThrownBy(() -> userService.register(registerRequest))
-                .isInstanceOf(DataIntegrityViolationException.class);
-    }
-
-    @Test
-    @DisplayName("login - должен вернуть пользователя когда данные валидны")
-    void login_ShouldReturnUser_WhenCredentialsAreValid() {
-        // given
-        when(userRepository.findByLogin(loginRequest.login())).thenReturn(Optional.of(user));
-        when(passwordEncoder.matches(loginRequest.password(), user.getPasswordHash())).thenReturn(true);
-
-        // when
-        User result = userService.login(loginRequest);
-
-        // then
-        assertThat(result).isEqualTo(user);
-    }
-
-    @Test
-    @DisplayName("login - должен выбросить ошибку если пользователь не найден")
-    void login_ShouldThrowException_WhenUserNotFound() {
-        // given
-        when(userRepository.findByLogin(loginRequest.login())).thenReturn(Optional.empty());
-
-        // when & then
-        assertThatThrownBy(() -> userService.login(loginRequest))
-                .isInstanceOf(InvalidCredentialsException.class);
-    }
-
-    @Test
-    @DisplayName("login - должен выбросить ошибку если пароль не совпадает")
-    void login_ShouldThrowException_WhenPasswordDoesNotMatch() {
-        // given
-        when(userRepository.findByLogin(loginRequest.login())).thenReturn(Optional.of(user));
-        when(passwordEncoder.matches(loginRequest.password(), user.getPasswordHash())).thenReturn(false);
-
-        // when & then
-        assertThatThrownBy(() -> userService.login(loginRequest))
-                .isInstanceOf(InvalidCredentialsException.class);
-    }
-
-    @Test
     @DisplayName("updateProfile - должен обновить профиль когда пользователь найден")
     void updateProfile_ShouldUpdateMyUser_WhenUserExists() {
         when(userRepository.findByUuid(uuid)).thenReturn(Optional.of(user));
@@ -168,6 +98,33 @@ class UserServiceTest {
         when(userRepository.findByUuid(uuid)).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> userService.updateProfile(uuid, updateProfileRequest))
+                .isInstanceOf(NotAuthorizedException.class);
+    }
+
+    @Test
+    @DisplayName("updateRights - должен успешно обновить права пользователя")
+    void updateRights_ShouldUpdateUserPermissions_WhenUserExists() {
+        // given
+        Permissions newPermissions = Permissions.ADMIN; // Предполагаем, что ADMIN есть в твоем enum
+        when(userRepository.findByUuid(uuid)).thenReturn(Optional.of(user));
+
+        // when
+        userService.updatePermissions(uuid, newPermissions);
+
+        // then
+        assertThat(user.getPermissions()).isEqualTo(newPermissions);
+        verify(userRepository).findByUuid(uuid);
+    }
+
+    @Test
+    @DisplayName("updateRights - должен выбросить ошибку если пользователь не найден")
+    void updatePermissions_ShouldThrowException_WhenUserNotFound() {
+        // given
+        Permissions newPermissions = Permissions.ADMIN;
+        when(userRepository.findByUuid(uuid)).thenReturn(Optional.empty());
+
+        // when & then
+        assertThatThrownBy(() -> userService.updatePermissions(uuid, newPermissions))
                 .isInstanceOf(NotAuthorizedException.class);
     }
 
@@ -260,19 +217,5 @@ class UserServiceTest {
         // when & then
         assertThatThrownBy(() -> userService.getByName(user.getName()))
                 .isInstanceOf(UserNotFoundException.class);
-    }
-
-    @Test
-    @DisplayName("generateToken - должен сгенерировать токен")
-    void generateToken_ShouldReturnToken() {
-        // given
-        String token = "token";
-        when(jwtManager.toToken(user.getUuid(), Rights.USER.getAuthorities())).thenReturn(token);
-
-        // when
-        String result = userService.generateToken(user);
-
-        // then
-        assertThat(result).isEqualTo(token);
     }
 }

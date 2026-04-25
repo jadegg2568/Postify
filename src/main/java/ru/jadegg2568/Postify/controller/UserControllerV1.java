@@ -7,11 +7,10 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-import ru.jadegg2568.Postify.entity.Rights;
 import ru.jadegg2568.Postify.entity.User;
-import ru.jadegg2568.Postify.exception.auth.NoAccessException;
 import ru.jadegg2568.Postify.mapper.UserMapper;
 import ru.jadegg2568.Postify.request.UpdateProfileRequest;
 import ru.jadegg2568.Postify.response.UserResponse;
@@ -48,13 +47,11 @@ public class UserControllerV1 {
             @ApiResponse(responseCode = "401", description = "Unauthorized (invalid or missing auth)")
     })
     @PatchMapping("/{uuid}")
+    @PreAuthorize("hasRole('ADMIN') or #uuid == authentication.principal.uuid")
     public ResponseEntity<UserResponse> update(
             @AuthenticationPrincipal UuidUserDetails details,
             @PathVariable UUID uuid,
             @Valid @RequestBody UpdateProfileRequest request) {
-        if (!details.rights().isAdmin() && !details.uuid().equals(uuid)) {
-            throw new NoAccessException();
-        }
         User user = userService.updateProfile(uuid, request);
         return ResponseEntity.ok(userMapper.toResponse(user));
     }
@@ -69,10 +66,8 @@ public class UserControllerV1 {
             @ApiResponse(responseCode = "401", description = "Unauthorized access")
     })
     @DeleteMapping("/{uuid}")
+    @PreAuthorize("hasRole('ADMIN') or #uuid == authentication.principal.uuid")
     public ResponseEntity<Void> delete(@AuthenticationPrincipal UuidUserDetails details, @PathVariable UUID uuid) {
-        if (!details.rights().isAdmin() && !details.uuid().equals(uuid)) {
-            throw new NoAccessException();
-        }
         userService.delete(uuid);
         return ResponseEntity.noContent().build();
     }
