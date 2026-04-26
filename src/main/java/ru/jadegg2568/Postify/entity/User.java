@@ -45,6 +45,10 @@ public class User {
     // S3 image key
     private String photoKey;
 
+    @Enumerated(EnumType.ORDINAL) // numeric type from id
+    @Column(columnDefinition = "SMALLINT", nullable = false)
+    private Permissions permissions;
+
     @CreationTimestamp
     private Instant createdAt;
 }

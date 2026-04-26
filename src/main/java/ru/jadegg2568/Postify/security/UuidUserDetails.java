@@ -3,19 +3,16 @@ package ru.jadegg2568.Postify.security;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-import ru.jadegg2568.Postify.entity.Rights;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.UUID;
 
-public record UuidUserDetails(UUID uuid, Rights rights)
+public record UuidUserDetails(UUID uuid, List<SimpleGrantedAuthority> roles)
         implements UserDetails {
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return rights.getAuthorities()
-                .stream()
-                .map(SimpleGrantedAuthority::new)
-                .toList();
+        return roles;
     }
 
     @Override

@@ -125,7 +125,7 @@ class UserServiceTest {
 
         // when & then
         assertThatThrownBy(() -> userService.updatePermissions(uuid, newPermissions))
-                .isInstanceOf(NotAuthorizedException.class);
+                .isInstanceOf(UserNotFoundException.class);
     }
 
     @Test

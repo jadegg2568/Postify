@@ -9,20 +9,13 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-import ru.jadegg2568.Postify.entity.Rights;
 import ru.jadegg2568.Postify.entity.User;
-import ru.jadegg2568.Postify.exception.auth.NoAccessException;
 import ru.jadegg2568.Postify.mapper.UserMapper;
 import ru.jadegg2568.Postify.request.LoginRequest;
 import ru.jadegg2568.Postify.request.RegisterRequest;
 import ru.jadegg2568.Postify.response.TokenResponse;
-import ru.jadegg2568.Postify.security.UuidUserDetails;
 import ru.jadegg2568.Postify.service.AuthService;
-import ru.jadegg2568.Postify.service.UserService;
-
-import java.util.UUID;
 
 @Tag(
         name = "Auth Controller V1",

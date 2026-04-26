@@ -2,20 +2,15 @@ package ru.jadegg2568.Postify.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.jadegg2568.Postify.entity.User;
-import ru.jadegg2568.Postify.exception.auth.InvalidCredentialsException;
 import ru.jadegg2568.Postify.exception.auth.NotAuthorizedException;
 import ru.jadegg2568.Postify.exception.user.UserNotFoundException;
 import ru.jadegg2568.Postify.mapper.UserMapper;
 import ru.jadegg2568.Postify.repository.UserRepository;
-import ru.jadegg2568.Postify.request.LoginRequest;
-import ru.jadegg2568.Postify.request.RegisterRequest;
 import ru.jadegg2568.Postify.request.UpdateProfileRequest;
-import ru.jadegg2568.Postify.security.JwtManager;
-import ru.jadegg2568.Postify.entity.Rights;
+import ru.jadegg2568.Postify.entity.Permissions;
 
 import java.util.List;
 import java.util.UUID;
@@ -37,6 +32,16 @@ public class UserService {
         log.info("Profile updated for user UUID: {}", uuid);
 
         return user;
+    }
+
+    @Transactional
+    public void updatePermissions(UUID uuid, Permissions newPermissions) {
+        log.debug("Updating rights for user UUID: {} to: {}", uuid, newPermissions);
+        User user = userRepository.findByUuid(uuid)
+                .orElseThrow(UserNotFoundException::new);
+
+        user.setPermissions(newPermissions);
+        log.info("Rights updated for user UUID: {} to: {}", uuid, newPermissions);
     }
 
     @Transactional

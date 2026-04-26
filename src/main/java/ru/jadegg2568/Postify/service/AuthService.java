@@ -5,17 +5,14 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.jadegg2568.Postify.entity.Rights;
+import ru.jadegg2568.Postify.entity.Permissions;
 import ru.jadegg2568.Postify.entity.User;
 import ru.jadegg2568.Postify.exception.auth.InvalidCredentialsException;
-import ru.jadegg2568.Postify.exception.auth.NotAuthorizedException;
 import ru.jadegg2568.Postify.mapper.UserMapper;
 import ru.jadegg2568.Postify.repository.UserRepository;
 import ru.jadegg2568.Postify.request.LoginRequest;
 import ru.jadegg2568.Postify.request.RegisterRequest;
 import ru.jadegg2568.Postify.security.JwtManager;
-
-import java.util.UUID;
 
 @Slf4j
 @Service
@@ -54,6 +51,6 @@ public class AuthService {
     }
 
     public String generateToken(User user) {
-        return jwtManager.toToken(user.getUuid(), Rights.USER.getAuthorities());
+        return jwtManager.toToken(user.getUuid(), Permissions.USER.getAuthorities());
     }
 }

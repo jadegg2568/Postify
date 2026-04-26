@@ -7,11 +7,12 @@ import java.util.Set;
 
 @Getter
 @RequiredArgsConstructor
-public enum Rights {
-    USER(Set.of("ROLE_USER")),
-    ADMIN(Set.of("ROLE_USER", "ROLE_ADMIN")),
-    OWNER(Set.of("ROLE_USER", "ROLE_ADMIN", "ROLE_OWNER"));
+public enum Permissions {
+    USER(10, Set.of("ROLE_USER")),
+    ADMIN(20, Set.of("ROLE_USER", "ROLE_ADMIN")),
+    OWNER(30, Set.of("ROLE_USER", "ROLE_ADMIN", "ROLE_OWNER"));
 
+    private final int id;
     private final Set<String> authorities;
 
     public boolean isAdmin() {
