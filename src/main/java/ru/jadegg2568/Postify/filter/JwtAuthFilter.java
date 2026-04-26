@@ -8,6 +8,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
@@ -17,7 +18,8 @@ import ru.jadegg2568.Postify.security.UuidUserDetails;
 import ru.jadegg2568.Postify.security.JwtManager;
 
 import java.io.IOException;
-import java.util.UUID;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Component
 public class JwtAuthFilter extends OncePerRequestFilter {
@@ -32,7 +34,6 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, 
                                     HttpServletResponse response, 
                                     FilterChain filterChain) throws ServletException, IOException {
-        
         String authHeader = request.getHeader("Authorization");
 
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
@@ -40,10 +41,19 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             try {
                 Claims claims = jwtService.getClaims(token);
                 String userUuid = claims.getSubject();
-                String role = claims.get("role", String.class);
+                List<?> rawRoles = claims.get("roles", List.class);
+
+                List<SimpleGrantedAuthority> authorities = new ArrayList<>();
+
+                if (rawRoles != null) {
+                    authorities = rawRoles.stream()
+                            .filter(obj -> obj instanceof String)
+                            .map(obj -> new SimpleGrantedAuthority((String) obj))
+                            .collect(Collectors.toList());
+                }
 
                 if (userUuid != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-                    UuidUserDetails details = new UuidUserDetails(UUID.fromString(userUuid), role);
+                    UuidUserDetails details = new UuidUserDetails(UUID.fromString(userUuid), authorities);
 
                     UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
                             details, null, details.getAuthorities()
