@@ -36,7 +36,7 @@ public class GlobalExceptionHandler {
 
         ErrorResponse error = new ErrorResponse(
                 HttpStatus.NOT_FOUND,
-                "NOT_FOUND",
+                "ENDPOINT_NOT_FOUND",
                 "Resource not found"
         );
 
@@ -113,7 +113,7 @@ public class GlobalExceptionHandler {
         ErrorResponse error = new ErrorResponse(
                 HttpStatus.INTERNAL_SERVER_ERROR,
                 "INTERNAL_ERROR",
-                "Something went wrong"
+                "Something went wrong: " + ex.getMessage()
         );
 
         return new ResponseEntity<>(error, error.status());
