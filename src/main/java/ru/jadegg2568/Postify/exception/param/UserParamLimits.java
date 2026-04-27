@@ -13,9 +13,9 @@ public class UserParamLimits {
 
     public static class Max {
         public static final int LOGIN = 32;
-        public static final int MAIL = 64;
-        public static final int PASSWORD = 64;
-        public static final int NAME = 50;
+        public static final int MAIL = 32;
+        public static final int PASSWORD = 32;
+        public static final int NAME = 24;
         public static final int DISPLAY_NAME = 100;
         public static final int DESCRIPTION = 2000;
     }

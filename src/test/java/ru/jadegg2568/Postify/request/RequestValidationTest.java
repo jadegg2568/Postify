@@ -66,7 +66,7 @@ class RequestValidationTest {
             // then
             assertThat(violations).isNotEmpty();
             assertThat(violations).extracting(ConstraintViolation::getMessage)
-                    .contains(ParamCodes.NOT_CORRECT);
+                    .contains(ParamCodes.INVALID_CHARACTERS);
         }
 
         @Test

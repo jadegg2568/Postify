@@ -8,10 +8,11 @@ import ru.jadegg2568.Postify.exception.param.UserParamLimits;
 
 public record RegisterRequest(
         @NotBlank(message = ParamCodes.EMPTY)
-        @Email(message = ParamCodes.NOT_CORRECT)
-        @Size(min = UserParamLimits.Min.MAIL, max = UserParamLimits.Max.MAIL,
-                message = ParamCodes.INVALID_SIZE)
-        @Schema(description = "User mail", example = "username@mail.com")
+        @Pattern(
+                regexp = "^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,6}$",
+                message = ParamCodes.INVALID_CHARACTERS
+        )
+        @Size(min = UserParamLimits.Min.MAIL, max = UserParamLimits.Max.MAIL, message = ParamCodes.INVALID_SIZE)
         String mail,
 
         @NotBlank(message = ParamCodes.EMPTY)
