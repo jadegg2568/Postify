@@ -14,7 +14,7 @@ import ru.jadegg2568.Postify.exception.auth.NotAuthorizedException;
 import ru.jadegg2568.Postify.exception.user.UserNotFoundException;
 import ru.jadegg2568.Postify.mapper.UserMapper;
 import ru.jadegg2568.Postify.repository.UserRepository;
-import ru.jadegg2568.Postify.security.JwtManager;
+import ru.jadegg2568.Postify.security.TokenManager;
 import ru.jadegg2568.Postify.entity.Permissions;
 import ru.jadegg2568.Postify.service.UserService;
 
@@ -40,7 +40,7 @@ class UserServiceTest {
     private PasswordEncoder passwordEncoder;
 
     @Mock
-    private JwtManager jwtManager;
+    private TokenManager tokenManager;
 
     @InjectMocks
     private UserService userService;

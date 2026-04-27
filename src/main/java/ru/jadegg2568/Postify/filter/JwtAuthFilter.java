@@ -15,7 +15,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 import ru.jadegg2568.Postify.security.UuidUserDetails;
-import ru.jadegg2568.Postify.security.JwtManager;
+import ru.jadegg2568.Postify.security.TokenManager;
 
 import java.io.IOException;
 import java.util.*;
@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
 @Component
 public class JwtAuthFilter extends OncePerRequestFilter {
     @Autowired
-    private JwtManager jwtService;
+    private TokenManager jwtService;
 
     @Autowired
     @Qualifier("handlerExceptionResolver")

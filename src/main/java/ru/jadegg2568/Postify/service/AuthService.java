@@ -12,7 +12,7 @@ import ru.jadegg2568.Postify.mapper.UserMapper;
 import ru.jadegg2568.Postify.repository.UserRepository;
 import ru.jadegg2568.Postify.request.LoginRequest;
 import ru.jadegg2568.Postify.request.RegisterRequest;
-import ru.jadegg2568.Postify.security.JwtManager;
+import ru.jadegg2568.Postify.security.TokenManager;
 
 @Slf4j
 @Service
@@ -21,7 +21,7 @@ public class AuthService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
-    private final JwtManager jwtManager;
+    private final TokenManager tokenManager;
 
     @Transactional
     public User register(RegisterRequest request) {
@@ -52,6 +52,6 @@ public class AuthService {
     }
 
     public String generateToken(User user) {
-        return jwtManager.toToken(user.getUuid(), Permissions.USER.getAuthorities());
+        return tokenManager.generateAccessToken(user.getUuid(), user.getPermissions().getAuthorities());
     }
 }

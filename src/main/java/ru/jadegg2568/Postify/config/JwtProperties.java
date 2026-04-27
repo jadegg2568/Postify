@@ -12,4 +12,5 @@ import java.time.Duration;
 public class JwtProperties {
     private String secretKey;
     private Duration expirationTime;
+    private Duration refreshExpirationTime;
 }

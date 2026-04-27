@@ -16,7 +16,7 @@ import ru.jadegg2568.Postify.repository.UserRepository;
 import ru.jadegg2568.Postify.request.LoginRequest;
 import ru.jadegg2568.Postify.request.RegisterRequest;
 import ru.jadegg2568.Postify.request.UpdateProfileRequest;
-import ru.jadegg2568.Postify.security.JwtManager;
+import ru.jadegg2568.Postify.security.TokenManager;
 import ru.jadegg2568.Postify.service.AuthService;
 
 import java.util.Optional;
@@ -41,7 +41,7 @@ public class AuthServiceTest {
     private PasswordEncoder passwordEncoder;
 
     @Mock
-    private JwtManager jwtManager;
+    private TokenManager tokenManager;
 
     @InjectMocks
     private AuthService authService;

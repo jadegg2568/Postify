@@ -39,4 +39,5 @@ logging:
 postify:
   jwt:
     secretKey: yEk<Cjzh%oAwAR9y0:&Uq|AmS$F|A*yw
-    expirationTime: 7d
+    expirationTime: 1h
+    refreshExpirationTime: 30d
