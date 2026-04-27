@@ -49,6 +49,10 @@ public class TokenManager {
                 .compact();
     }
 
+    public String getSubject(String token) {
+        return getClaims(token).getSubject();
+    }
+
     public <T> T getClaim(String token, String name, Class<T> type) {
         return getClaims(token).get(name, type);
     }

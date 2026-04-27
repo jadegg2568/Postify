@@ -12,7 +12,6 @@ import ru.jadegg2568.Postify.mapper.UserMapper;
 import ru.jadegg2568.Postify.repository.UserRepository;
 import ru.jadegg2568.Postify.request.LoginRequest;
 import ru.jadegg2568.Postify.request.RegisterRequest;
-import ru.jadegg2568.Postify.security.TokenManager;
 
 @Slf4j
 @Service
@@ -21,7 +20,6 @@ public class AuthService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
-    private final TokenManager tokenManager;
 
     @Transactional
     public User register(RegisterRequest request) {
@@ -49,9 +47,5 @@ public class AuthService {
 
         log.info("User logged in successfully: {}", user.getUuid());
         return user;
-    }
-
-    public String generateToken(User user) {
-        return tokenManager.generateAccessToken(user.getUuid(), user.getPermissions().getAuthorities());
     }
 }
