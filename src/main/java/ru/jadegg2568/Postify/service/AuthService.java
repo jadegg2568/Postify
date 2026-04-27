@@ -28,6 +28,7 @@ public class AuthService {
         log.debug("Registering user with email: {}", request.mail());
         User user = userMapper.toEntity(request);
         user.setPasswordHash(passwordEncoder.encode(request.password()));
+        user.setPermissions(Permissions.USER);
 
         userRepository.save(user);
         log.info("User registered successfully with UUID: {}", user.getUuid());
