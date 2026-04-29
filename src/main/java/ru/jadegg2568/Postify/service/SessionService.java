@@ -71,23 +71,29 @@ public class SessionService {
                 session.getUuid());
     }
 
-    public String generateToken(User user, String refreshToken) {
+    public String generateToken(String refreshToken) {
         UUID sessionUuid = tokenManager.getClaim(refreshToken, "sid", UUID.class);
         UUID tokenUserUuid = UUID.fromString(tokenManager.getSubject(refreshToken));
 
         Session session = sessionRepository.findByUuid(sessionUuid)
                 .orElseThrow(SessionNotFoundException::new);
 
-        if (!session.getUser().getUuid().equals(tokenUserUuid)) {
-            log.warn("Security alert: User {} tried to use session of user {}", tokenUserUuid, session.getUser().getUuid());
+        User user = session.getUser();
+
+        if (!user.getUuid().equals(tokenUserUuid)) {
+            log.warn("Security alert: User {} tried to use session of user {}", tokenUserUuid, user.getUuid());
             throw new SessionMismatchException();
         }
 
         if (session.isCancelled()) {
+            log.info("Attempt to use cancelled session: {}", sessionUuid);
             throw new SessionExpiredException();
         }
 
-        return tokenManager.generateAccessToken(user.getUuid(), user.getPermissions().getAuthorities());
+        return tokenManager.generateAccessToken(
+                user.getUuid(),
+                user.getPermissions().getAuthorities()
+        );
     }
 
     private static @NonNull String joinLastSessions(List<Session> sessions) {

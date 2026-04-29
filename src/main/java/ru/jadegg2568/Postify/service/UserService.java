@@ -46,8 +46,7 @@ public class UserService {
 
     @Transactional
     public void delete(UUID uuid) {
-        log.debug("Delete request for user UUID: {}", uuid)
-        ;
+        log.debug("Delete request for user UUID: {}", uuid);
         if (!userRepository.existsByUuid(uuid)) {
             log.warn("Delete failed - user not found: {}", uuid);
             throw new NotAuthorizedException();

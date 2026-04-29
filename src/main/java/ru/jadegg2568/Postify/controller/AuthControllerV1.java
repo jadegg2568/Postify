@@ -15,6 +15,7 @@ import ru.jadegg2568.Postify.entity.Session;
 import ru.jadegg2568.Postify.entity.User;
 import ru.jadegg2568.Postify.mapper.UserMapper;
 import ru.jadegg2568.Postify.request.LoginRequest;
+import ru.jadegg2568.Postify.request.RefreshRequest;
 import ru.jadegg2568.Postify.request.RegisterRequest;
 import ru.jadegg2568.Postify.response.SessionResponse;
 import ru.jadegg2568.Postify.service.AuthService;
@@ -75,7 +76,7 @@ public class AuthControllerV1 {
         Session session = sessionService.generateSession(user);
 
         String refreshToken = sessionService.generateRefreshToken(session);
-        String token = sessionService.generateToken(user, refreshToken);
+        String token = sessionService.generateToken(refreshToken);
 
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(new SessionResponse(refreshToken, token, user.getUuid(), userMapper.toResponse(user)));

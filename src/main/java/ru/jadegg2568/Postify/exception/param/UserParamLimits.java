@@ -9,6 +9,7 @@ public class UserParamLimits {
         public static final int NAME = 2;
         public static final int DISPLAY_NAME = 1;
         public static final int DESCRIPTION = 0;
+        public static final int TOKEN = 128;
     }
 
     public static class Max {
@@ -18,6 +19,7 @@ public class UserParamLimits {
         public static final int NAME = 24;
         public static final int DISPLAY_NAME = 100;
         public static final int DESCRIPTION = 2000;
+        public static final int TOKEN = 512;
     }
 }
 

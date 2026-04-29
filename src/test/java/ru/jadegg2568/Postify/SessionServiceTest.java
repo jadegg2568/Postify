@@ -144,7 +144,7 @@ class SessionServiceTest {
         when(tokenManager.generateAccessToken(any(), any())).thenReturn("new-access-token");
 
         // when
-        String result = sessionService.generateToken(user, refreshToken);
+        String result = sessionService.generateToken(refreshToken);
 
         // then
         assertThat(result).isEqualTo("new-access-token");
@@ -158,7 +158,7 @@ class SessionServiceTest {
         when(tokenManager.getSubject(refreshToken)).thenReturn(strangerUuid.toString());
         when(sessionRepository.findByUuid(sessionUuid)).thenReturn(Optional.of(session));
 
-        assertThatThrownBy(() -> sessionService.generateToken(user, refreshToken))
+        assertThatThrownBy(() -> sessionService.generateToken(refreshToken))
                 .isInstanceOf(SessionMismatchException.class);
     }
 
@@ -170,7 +170,7 @@ class SessionServiceTest {
         when(tokenManager.getSubject(refreshToken)).thenReturn(userUuid.toString());
         when(sessionRepository.findByUuid(sessionUuid)).thenReturn(Optional.of(session));
 
-        assertThatThrownBy(() -> sessionService.generateToken(user, refreshToken))
+        assertThatThrownBy(() -> sessionService.generateToken(refreshToken))
                 .isInstanceOf(SessionExpiredException.class);
     }
 
@@ -181,7 +181,7 @@ class SessionServiceTest {
         when(tokenManager.getSubject(refreshToken)).thenReturn(userUuid.toString());
         when(sessionRepository.findByUuid(sessionUuid)).thenReturn(Optional.empty());
 
-        assertThatThrownBy(() -> sessionService.generateToken(user, refreshToken))
+        assertThatThrownBy(() -> sessionService.generateToken(refreshToken))
                 .isInstanceOf(SessionNotFoundException.class);
     }
 }
