@@ -29,48 +29,17 @@ public class SessionService {
     @Transactional
     public Session generateSession(User user) {
         UUID uuid = UUID.randomUUID();
-
         Session session = Session.builder()
                 .uuid(uuid)
                 .user(user)
                 .title(uuid.toString())
                 .build();
 
-        log.debug("Generated user session: {} of {}", session.getUuid(), user.getUuid());
+        log.debug("Generated user session: {} for user {}", uuid, user.getUuid());
         return sessionRepository.save(session);
     }
 
-    public List<Session> findUserSessions(UUID userUuid) {
-        User user = userService.getByUuid(userUuid);
-        List<Session> sessions = sessionRepository.findByUserId(user.getId());
-        log.debug("Found user sessions (last 5): {}", joinLastSessions(sessions));
-        return sessions;
-    }
-
-    @Transactional
-    public void cancelSession(UUID userUuid, UUID uuid) {
-        Session session = sessionRepository.findByDetailedInfo(userUuid, uuid)
-                        .orElseThrow(SessionNotFoundException::new);
-        session.setCancelled(true);
-        log.debug("Cancelled user session: {} of {}", session.getUuid(), userUuid);
-    }
-
-    @Transactional
-    public void cancelUserSessions(UUID userUuid) {
-        User user = userService.getByUuid(userUuid);
-        List<Session> sessions = sessionRepository.findByUserId(user.getId());
-
-        for (Session session1 : sessions) {
-            session1.setCancelled(true);
-        }
-        log.debug("Cancelled user sessions: {} of {}", joinLastSessions(sessions), user.getUuid());
-    }
-
-    public String generateRefreshToken(Session session) {
-        return tokenManager.generateRefreshToken(session.getUser().getUuid(),
-                session.getUuid());
-    }
-
+    @Transactional(readOnly = true)
     public String generateToken(String refreshToken) {
         UUID sessionUuid = tokenManager.getClaim(refreshToken, "sid", UUID.class);
         UUID tokenUserUuid = UUID.fromString(tokenManager.getSubject(refreshToken));
@@ -85,8 +54,12 @@ public class SessionService {
             throw new SessionMismatchException();
         }
 
+        return generateToken(user, session);
+    }
+
+    public String generateToken(User user, Session session) {
         if (session.isCancelled()) {
-            log.info("Attempt to use cancelled session: {}", sessionUuid);
+            log.info("Attempt to use cancelled session: {}", session.getUuid());
             throw new SessionExpiredException();
         }
 
@@ -96,9 +69,32 @@ public class SessionService {
         );
     }
 
+    public String generateRefreshToken(Session session) {
+        return tokenManager.generateRefreshToken(session.getUser().getUuid(), session.getUuid());
+    }
+
+    @Transactional
+    public void cancelSession(UUID userUuid, UUID uuid) {
+        Session session = sessionRepository.findByDetailedInfo(userUuid, uuid)
+                .orElseThrow(SessionNotFoundException::new);
+        session.setCancelled(true);
+    }
+
+    @Transactional
+    public void cancelUserSessions(UUID userUuid) {
+        User user = userService.getByUuid(userUuid);
+        List<Session> sessions = sessionRepository.findByUserId(user.getId());
+        sessions.forEach(s -> s.setCancelled(true));
+    }
+
+    public List<Session> findUserSessions(UUID userUuid) {
+        User user = userService.getByUuid(userUuid);
+        return sessionRepository.findByUserId(user.getId());
+    }
+
     private static @NonNull String joinLastSessions(List<Session> sessions) {
         return sessions.stream()
-                .sorted(Comparator.comparing(Session::getCreatedAt).reversed()) // Сначала новые
+                .sorted(Comparator.comparing(Session::getCreatedAt).reversed())
                 .limit(5)
                 .map(s -> s.getUuid().toString())
                 .collect(Collectors.joining(", "));

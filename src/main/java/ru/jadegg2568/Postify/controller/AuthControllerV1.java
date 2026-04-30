@@ -17,6 +17,7 @@ import ru.jadegg2568.Postify.mapper.UserMapper;
 import ru.jadegg2568.Postify.request.LoginRequest;
 import ru.jadegg2568.Postify.request.RefreshRequest;
 import ru.jadegg2568.Postify.request.RegisterRequest;
+import ru.jadegg2568.Postify.response.SessionRefreshResponse;
 import ru.jadegg2568.Postify.response.SessionResponse;
 import ru.jadegg2568.Postify.service.AuthService;
 import ru.jadegg2568.Postify.service.SessionService;
@@ -72,11 +73,29 @@ public class AuthControllerV1 {
         return createSessionAndTokens(user);
     }
 
+    // public
+    // POST /refresh
+    @Operation(
+            summary = "Refresh token",
+            description = "Gives a new access token from refresh token"
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Successful"),
+            @ApiResponse(responseCode = "404", description = "Not found session"),
+            @ApiResponse(responseCode = "401", description = "Session is already expired or cancelled"),
+    })
+    @PostMapping("/refresh")
+    public ResponseEntity<SessionRefreshResponse> refresh(@Valid @RequestBody RefreshRequest request) {
+        String token = sessionService.generateToken(request.refreshToken());
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(new SessionRefreshResponse(token));
+    }
+
     private @NonNull ResponseEntity<SessionResponse> createSessionAndTokens(User user) {
         Session session = sessionService.generateSession(user);
 
         String refreshToken = sessionService.generateRefreshToken(session);
-        String token = sessionService.generateToken(refreshToken);
+        String token = sessionService.generateToken(user, session);
 
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(new SessionResponse(refreshToken, token, user.getUuid(), userMapper.toResponse(user)));
