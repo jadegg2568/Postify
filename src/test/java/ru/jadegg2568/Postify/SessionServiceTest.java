@@ -7,6 +7,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import ru.jadegg2568.Postify.config.JwtProperties;
 import ru.jadegg2568.Postify.entity.Permissions;
 import ru.jadegg2568.Postify.entity.Session;
 import ru.jadegg2568.Postify.entity.User;
@@ -17,6 +18,7 @@ import ru.jadegg2568.Postify.security.TokenManager;
 import ru.jadegg2568.Postify.service.SessionService;
 import ru.jadegg2568.Postify.service.UserService;
 
+import java.time.Duration;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -28,6 +30,9 @@ import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class SessionServiceTest {
+
+    @Mock
+    private JwtProperties jwtProperties;
 
     @Mock
     private UserService userService;
@@ -68,14 +73,18 @@ class SessionServiceTest {
     }
 
     @Test
-    @DisplayName("generateSession - должен успешно создать и сохранить сессию")
     void generateSession_ShouldSaveAndReturnSession() {
-        when(sessionRepository.save(any(Session.class))).thenAnswer(inv -> inv.getArgument(0));
+        when(jwtProperties.getRefreshExpirationTime())
+                .thenReturn(Duration.ofDays(30));
+
+        when(sessionRepository.save(any(Session.class)))
+                .thenAnswer(inv -> inv.getArgument(0));
 
         Session result = sessionService.generateSession(user);
 
         assertThat(result).isNotNull();
         assertThat(result.getUser()).isEqualTo(user);
+
         verify(sessionRepository).save(any(Session.class));
     }
 
