@@ -5,14 +5,16 @@ import lombok.extern.slf4j.Slf4j;
 import org.jspecify.annotations.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.jadegg2568.Postify.config.JwtProperties;
 import ru.jadegg2568.Postify.entity.Session;
 import ru.jadegg2568.Postify.entity.User;
-import ru.jadegg2568.Postify.exception.auth.SessionMismatchException;
 import ru.jadegg2568.Postify.exception.auth.SessionExpiredException;
+import ru.jadegg2568.Postify.exception.auth.SessionMismatchException;
 import ru.jadegg2568.Postify.exception.auth.SessionNotFoundException;
 import ru.jadegg2568.Postify.repository.SessionRepository;
 import ru.jadegg2568.Postify.security.TokenManager;
 
+import java.time.Instant;
 import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
@@ -22,6 +24,7 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class SessionService {
+    private final JwtProperties jwtProperties;
     private final UserService userService;
     private final SessionRepository sessionRepository;
     private final TokenManager tokenManager;
@@ -29,10 +32,13 @@ public class SessionService {
     @Transactional
     public Session generateSession(User user) {
         UUID uuid = UUID.randomUUID();
+        Instant expiresAt = Instant.now().plus(jwtProperties.getRefreshExpirationTime());
+
         Session session = Session.builder()
                 .uuid(uuid)
                 .user(user)
                 .title(uuid.toString())
+                .expiresAt(expiresAt)
                 .build();
 
         log.debug("Generated user session: {} for user {}", uuid, user.getUuid());

@@ -1,10 +1,9 @@
 package ru.jadegg2568.Postify.entity;
 
 import jakarta.persistence.*;
-import jdk.jfr.BooleanFlag;
+import jdk.jfr.Timestamp;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UuidGenerator;
 
 import java.time.Instant;
 import java.util.UUID;
@@ -33,6 +32,9 @@ public class Session {
 
     @Builder.Default
     private boolean cancelled = false;
+
+    @Timestamp
+    private Instant expiresAt;
 
     @CreationTimestamp
     private Instant createdAt;
