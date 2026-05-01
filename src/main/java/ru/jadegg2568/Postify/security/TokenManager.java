@@ -3,12 +3,9 @@ package ru.jadegg2568.Postify.security;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
-import org.jspecify.annotations.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import ru.jadegg2568.Postify.config.JwtProperties;
-import ru.jadegg2568.Postify.entity.Permissions;
-import ru.jadegg2568.Postify.entity.User;
+import ru.jadegg2568.Postify.config.SessionProperties;
 
 import javax.crypto.SecretKey;
 import java.util.*;
@@ -17,17 +14,17 @@ import java.util.*;
 public class TokenManager {
 
     @Autowired
-    private JwtProperties jwtProperties;
+    private SessionProperties sessionProperties;
 
     private SecretKey getSecretKey() {
-        return Keys.hmacShaKeyFor(jwtProperties.getSecretKey().getBytes());
+        return Keys.hmacShaKeyFor(sessionProperties.getSecretKey().getBytes());
     }
 
     public String generateAccessToken(UUID userUuid, Set<String> roles) {
         return buildToken(
                 userUuid.toString(),
                 Map.of("roles", roles),
-                jwtProperties.getExpirationTime().toMillis()
+                sessionProperties.getExpiration().toMillis()
         );
     }
 
@@ -35,7 +32,7 @@ public class TokenManager {
         return buildToken(
                 userUuid.toString(),
                 Map.of("sid", sessionUuid.toString()),
-                jwtProperties.getRefreshExpirationTime().toMillis()
+                sessionProperties.getRefreshExpiration().toMillis()
         );
     }
 

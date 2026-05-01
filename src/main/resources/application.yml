@@ -37,7 +37,10 @@ logging:
     ru.jadegg2568.Postify: DEBUG
 
 postify:
-  jwt:
+  session:
     secretKey: yEk<Cjzh%oAwAR9y0:&Uq|AmS$F|A*yw
-    expirationTime: 1h
-    refreshExpirationTime: 30d
+    expiration: 1h
+    refreshExpiration: 30d
+    expiredDeleting:
+      delay: 5m
+      count: 10000

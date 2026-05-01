@@ -3,9 +3,10 @@ package ru.jadegg2568.Postify.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jspecify.annotations.NonNull;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.jadegg2568.Postify.config.JwtProperties;
+import ru.jadegg2568.Postify.config.SessionProperties;
 import ru.jadegg2568.Postify.entity.Session;
 import ru.jadegg2568.Postify.entity.User;
 import ru.jadegg2568.Postify.exception.auth.SessionExpiredException;
@@ -24,7 +25,7 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class SessionService {
-    private final JwtProperties jwtProperties;
+    private final SessionProperties sessionProperties;
     private final UserService userService;
     private final SessionRepository sessionRepository;
     private final TokenManager tokenManager;
@@ -32,7 +33,7 @@ public class SessionService {
     @Transactional
     public Session generateSession(User user) {
         UUID uuid = UUID.randomUUID();
-        Instant expiresAt = Instant.now().plus(jwtProperties.getRefreshExpirationTime());
+        Instant expiresAt = Instant.now().plus(sessionProperties.getRefreshExpiration());
 
         Session session = Session.builder()
                 .uuid(uuid)
@@ -96,6 +97,14 @@ public class SessionService {
     public List<Session> findUserSessions(UUID userUuid) {
         User user = userService.getByUuid(userUuid);
         return sessionRepository.findByUserId(user.getId());
+    }
+
+    public void clearExpiredSessions() {
+        int limit = sessionProperties.getExpiredDeleting().getCount();
+
+        List<Long> ids = sessionRepository.findExpiredIds(Instant.now(), PageRequest.of(0, limit));
+        sessionRepository.deleteByIds(ids);
+        log.info("Deleted {} expired sessions", ids.size());
     }
 
     private static @NonNull String joinLastSessions(List<Session> sessions) {

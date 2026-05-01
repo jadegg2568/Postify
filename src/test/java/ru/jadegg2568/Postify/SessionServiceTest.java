@@ -7,7 +7,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import ru.jadegg2568.Postify.config.JwtProperties;
+import ru.jadegg2568.Postify.config.SessionProperties;
 import ru.jadegg2568.Postify.entity.Permissions;
 import ru.jadegg2568.Postify.entity.Session;
 import ru.jadegg2568.Postify.entity.User;
@@ -32,7 +32,7 @@ import static org.mockito.Mockito.*;
 class SessionServiceTest {
 
     @Mock
-    private JwtProperties jwtProperties;
+    private SessionProperties sessionProperties;
 
     @Mock
     private UserService userService;
@@ -74,7 +74,7 @@ class SessionServiceTest {
 
     @Test
     void generateSession_ShouldSaveAndReturnSession() {
-        when(jwtProperties.getRefreshExpirationTime())
+        when(sessionProperties.getRefreshExpiration())
                 .thenReturn(Duration.ofDays(30));
 
         when(sessionRepository.save(any(Session.class)))
