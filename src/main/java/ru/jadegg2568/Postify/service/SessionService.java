@@ -94,17 +94,18 @@ public class SessionService {
         sessions.forEach(s -> s.setCancelled(true));
     }
 
-    public List<Session> findUserSessions(UUID userUuid) {
-        User user = userService.getByUuid(userUuid);
-        return sessionRepository.findByUserId(user.getId());
-    }
-
+    @Transactional
     public void clearExpiredSessions() {
         int limit = sessionProperties.getExpiredDeleting().getCount();
 
         List<Long> ids = sessionRepository.findExpiredIds(Instant.now(), PageRequest.of(0, limit));
         sessionRepository.deleteByIds(ids);
         log.info("Deleted {} expired sessions", ids.size());
+    }
+
+    public List<Session> findUserSessions(UUID userUuid) {
+        User user = userService.getByUuid(userUuid);
+        return sessionRepository.findByUserId(user.getId());
     }
 
     private static @NonNull String joinLastSessions(List<Session> sessions) {
