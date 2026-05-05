@@ -29,6 +29,10 @@ public class Post {
     @JoinColumn(name = "author_id", nullable = false)
     private User author;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "reply_to_id")
+    private Post replyTo;
+
     @Column(nullable = false)
     private String title;
 
