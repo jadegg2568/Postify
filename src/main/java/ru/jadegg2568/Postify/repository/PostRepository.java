@@ -14,11 +14,12 @@ import java.util.UUID;
 @Repository
 public interface PostRepository extends JpaRepository<Post, Long> {
 
+    @EntityGraph(attributePaths = {"author", "replyTo"})
     Optional<Post> findByUuid(UUID uuid);
-
-    Page<Post> findByAuthorId(Long authorId, Pageable pageable);
 
     @EntityGraph(attributePaths = {"author"})
     Page<Post> findAll(@NonNull Pageable pageable);
+
+    Page<Post> findByAuthorId(Long authorId, Pageable pageable);
 
 }
