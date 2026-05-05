@@ -33,6 +33,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/v1/auth/register", "/v1/auth/login").permitAll() // register, login
                         .requestMatchers(HttpMethod.GET, "/v1/users/**").permitAll() // getters
+                        .requestMatchers(HttpMethod.GET, "/v1/posts/**").permitAll() // getters
                         .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").hasRole("ADMIN") // Swagger UI
                         .anyRequest().authenticated() // any other requires token else UNAUTHORIZED
                 )
