@@ -6,6 +6,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -18,6 +19,7 @@ import ru.jadegg2568.Postify.response.PostResponse;
 import ru.jadegg2568.Postify.security.UuidUserDetails;
 import ru.jadegg2568.Postify.service.PostService;
 
+import java.util.List;
 import java.util.UUID;
 
 @Tag(
@@ -55,22 +57,6 @@ public class PostControllerV1 {
     ) {
         Post post = postService.create(details, request, replyToUuid);
         return ResponseEntity.status(HttpStatus.CREATED).body(postMapper.toResponse(post));
-    }
-
-    // public
-    // GET /v1/posts/{uuid}
-    @Operation(
-            summary = "Get post by UUID",
-            description = "Returns a post by UUID. Public endpoint"
-    )
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Post found"),
-            @ApiResponse(responseCode = "404", description = "Post not found")
-    })
-    @GetMapping("/{uuid}")
-    public ResponseEntity<PostResponse> getByUuid(@PathVariable UUID uuid) {
-        Post post = postService.getByUuid(uuid);
-        return ResponseEntity.ok(postMapper.toResponse(post));
     }
 
     // profile (auth required)
@@ -111,5 +97,41 @@ public class PostControllerV1 {
     ) {
         postService.delete(details, uuid);
         return ResponseEntity.noContent().build();
+    }
+
+    // public
+    // GET /v1/posts/{uuid}
+    @Operation(
+            summary = "Get post by UUID",
+            description = "Returns a post by UUID. Public endpoint"
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Post found"),
+            @ApiResponse(responseCode = "404", description = "Post not found")
+    })
+    @GetMapping("/{uuid}")
+    public ResponseEntity<PostResponse> getByUuid(@PathVariable UUID uuid) {
+        Post post = postService.getByUuid(uuid);
+        return ResponseEntity.ok(postMapper.toResponse(post));
+    }
+
+    // public
+    // GET /v1/posts/{uuid}
+    @Operation(
+            summary = "Search posts by title",
+            description = "Returns posts found by title. Public endpoint"
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Post found"),
+    })
+    @GetMapping
+    public ResponseEntity<List<PostResponse>> getPosts(
+            @RequestParam(required = false) String title,
+            @RequestParam(defaultValue = "10") int length) {
+        Page<Post> posts = (title != null)
+                ? postService.searchByTitle(title, length)
+                : postService.find(length);
+
+        return ResponseEntity.ok(posts.stream().map(postMapper::toResponse).toList());
     }
 }

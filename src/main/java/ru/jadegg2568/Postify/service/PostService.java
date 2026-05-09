@@ -2,6 +2,8 @@ package ru.jadegg2568.Postify.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.jadegg2568.Postify.entity.Post;
@@ -16,7 +18,9 @@ import ru.jadegg2568.Postify.request.PostCreateRequest;
 import ru.jadegg2568.Postify.request.PostUpdateRequest;
 import ru.jadegg2568.Postify.security.UuidUserDetails;
 
+import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -46,6 +50,15 @@ public class PostService {
     public Post getByUuid(UUID uuid) {
         return postRepository.findByUuid(uuid)
                 .orElseThrow(PostNotFoundException::new);
+    }
+
+    @Transactional(readOnly = true)
+    public Page<Post> searchByTitle(String title, int length) {
+        return postRepository.findByTitleContainingIgnoreCase(title, PageRequest.of(0, length));
+    }
+
+    public Page<Post> find(int length) {
+        return postRepository.findAll(PageRequest.of(0, length));
     }
 
     @Transactional
