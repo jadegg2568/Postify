@@ -10,10 +10,11 @@ import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 import ru.jadegg2568.Postify.exception.ApiException;
-import ru.jadegg2568.Postify.response.ErrorResponse;
 import ru.jadegg2568.Postify.exception.param.ParamError;
+import ru.jadegg2568.Postify.response.ErrorResponse;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -101,6 +102,19 @@ public class GlobalExceptionHandler {
                 "VALIDATION_ERROR",
                 "Invalid request",
                 details
+        );
+
+        return new ResponseEntity<>(error, error.status());
+    }
+
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public ResponseEntity<ErrorResponse> handleTypeMismatch(MethodArgumentTypeMismatchException ex) {
+        log.debug("Type Mismatch: {}", ex.getMessage());
+
+        ErrorResponse error = new ErrorResponse(
+                HttpStatus.BAD_REQUEST,
+                "TYPE_MISMATCH",
+                "Invalid request"
         );
 
         return new ResponseEntity<>(error, error.status());
