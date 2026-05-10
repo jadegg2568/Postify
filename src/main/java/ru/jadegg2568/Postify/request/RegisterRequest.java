@@ -26,6 +26,10 @@ public record RegisterRequest(
         String password,
 
         @NotBlank(message = ParamCodes.EMPTY)
+        @Pattern(
+                regexp = "^[A-Za-z0-9_]+$",
+                message = ParamCodes.INVALID_CHARACTERS
+        )
         @Size(min = UserParamLimits.Min.NAME, max = UserParamLimits.Max.NAME,
                 message = ParamCodes.INVALID_SIZE)
         @Schema(description = "Username", example = "username")
