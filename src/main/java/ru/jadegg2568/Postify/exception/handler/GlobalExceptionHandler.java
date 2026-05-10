@@ -28,7 +28,7 @@ public class GlobalExceptionHandler {
         log.debug("API error: {}", ex.getMessage());
 
         ErrorResponse error = new ErrorResponse(ex);
-        return new ResponseEntity<>(error, error.status());
+        return ResponseEntity.status(error.status()).body(error);
     }
 
     @ExceptionHandler(NoResourceFoundException.class)
@@ -41,7 +41,7 @@ public class GlobalExceptionHandler {
                 "Resource not found"
         );
 
-        return new ResponseEntity<>(error, error.status());
+        return ResponseEntity.status(error.status()).body(error);
     }
 
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
@@ -51,10 +51,10 @@ public class GlobalExceptionHandler {
         ErrorResponse error = new ErrorResponse(
                 HttpStatus.METHOD_NOT_ALLOWED,
                 "METHOD_NOT_ALLOWED",
-                ex.getMessage()
+                "HTTP method not supported"
         );
 
-        return new ResponseEntity<>(error, error.status());
+        return ResponseEntity.status(error.status()).body(error);
     }
 
     @ExceptionHandler(DataIntegrityViolationException.class)
@@ -63,11 +63,15 @@ public class GlobalExceptionHandler {
 
         Map<String, Object> details = new HashMap<>();
 
-        if (ex.getMessage().contains("mail")) {
-            details.put("mail", ParamError.BUSY);
-        }
-        if (ex.getMessage().contains("name")) {
-            details.put("name", ParamError.BUSY);
+        String message = ex.getMostSpecificCause().getMessage();
+
+        if (message != null) {
+            if (message.contains("mail")) {
+                details.put("mail", ParamError.BUSY);
+            }
+            if (message.contains("name")) {
+                details.put("name", ParamError.BUSY);
+            }
         }
 
         ErrorResponse error = new ErrorResponse(
@@ -77,7 +81,7 @@ public class GlobalExceptionHandler {
                 details
         );
 
-        return new ResponseEntity<>(error, error.status());
+        return ResponseEntity.status(error.status()).body(error);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -87,13 +91,15 @@ public class GlobalExceptionHandler {
         Map<String, Object> details = new HashMap<>();
 
         for (ObjectError err : ex.getBindingResult().getAllErrors()) {
-            String field = ((FieldError) err).getField();
-            String message = err.getDefaultMessage();
+            if (err instanceof FieldError fieldError) {
+                String field = fieldError.getField();
+                String message = err.getDefaultMessage();
 
-            try {
-                details.put(field, ParamError.valueOf(message));
-            } catch (Exception ignored) {
-                details.put(field, message);
+                try {
+                    details.put(field, ParamError.valueOf(message));
+                } catch (Exception ignored) {
+                    details.put(field, message);
+                }
             }
         }
 
@@ -104,32 +110,32 @@ public class GlobalExceptionHandler {
                 details
         );
 
-        return new ResponseEntity<>(error, error.status());
+        return ResponseEntity.status(error.status()).body(error);
     }
 
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     public ResponseEntity<ErrorResponse> handleTypeMismatch(MethodArgumentTypeMismatchException ex) {
-        log.debug("Type Mismatch: {}", ex.getMessage());
+        log.debug("Type mismatch: {}", ex.getMessage());
 
         ErrorResponse error = new ErrorResponse(
                 HttpStatus.BAD_REQUEST,
                 "TYPE_MISMATCH",
-                "Invalid request"
+                "Invalid parameter type"
         );
 
-        return new ResponseEntity<>(error, error.status());
+        return ResponseEntity.status(error.status()).body(error);
     }
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleUnexpected(Exception ex) {
-        log.error("Unhandled error: ", ex);
+        log.error("Unhandled error", ex);
 
         ErrorResponse error = new ErrorResponse(
                 HttpStatus.INTERNAL_SERVER_ERROR,
                 "INTERNAL_ERROR",
-                "Something went wrong: " + ex.getMessage()
+                "Internal server error"
         );
 
-        return new ResponseEntity<>(error, error.status());
+        return ResponseEntity.status(error.status()).body(error);
     }
 }
