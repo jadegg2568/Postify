@@ -21,7 +21,7 @@ import java.util.Map;
 
 @Slf4j
 @RestControllerAdvice
-public class GlobalExceptionHandler {
+public class MainExceptionHandler {
 
     @ExceptionHandler(ApiException.class)
     public ResponseEntity<ErrorResponse> handleApi(ApiException ex) {
@@ -38,7 +38,7 @@ public class GlobalExceptionHandler {
         ErrorResponse error = new ErrorResponse(
                 HttpStatus.NOT_FOUND,
                 "ENDPOINT_NOT_FOUND",
-                "Resource not found"
+                "Endpoint not found"
         );
 
         return ResponseEntity.status(error.status()).body(error);
