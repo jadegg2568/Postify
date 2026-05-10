@@ -10,7 +10,6 @@ import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 import ru.jadegg2568.Postify.exception.ApiException;
 import ru.jadegg2568.Postify.response.ErrorResponse;
@@ -80,8 +79,7 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(error, error.status());
     }
 
-    @ExceptionHandler(exception = {MethodArgumentNotValidException.class,
-            MethodArgumentTypeMismatchException.class})
+    @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponse> handleValidation(MethodArgumentNotValidException ex) {
         log.debug("Validation error: {}", ex.getMessage());
 
