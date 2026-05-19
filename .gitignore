@@ -38,3 +38,7 @@ out/
 
 ### DevOps ###
 .env
+ssl/
+*.key
+*.crt
+*.pem
