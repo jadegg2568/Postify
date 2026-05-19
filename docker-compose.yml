@@ -5,18 +5,15 @@ services:
     image: postgres:16-alpine
     container_name: postify-db
     environment:
-      POSTGRES_DB: postify
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_INITDB_ARGS: "--encoding=UTF8"
-    ports:
-      - "5432:5432"
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
     volumes:
       - postgres-data:/var/lib/postgresql/data
     networks:
-      - postify-net
+      - postify-network
     healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d postify" ]
+      test: [ "CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME}" ]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -24,35 +21,36 @@ services:
   postify-app:
     build: .
     container_name: postify-app
-    ports:
-      - "8080:8080"
     environment:
       SPRING_PROFILES_ACTIVE: docker
-
-      SPRING_DATASOURCE_URL: ${POSTGRES_URL}
-      SPRING_DATASOURCE_USERNAME: ${POSTGRES_USERNAME}
-      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD}
-
-      SPRING_FLYWAY_ENABLED: ${SPRING_FLYWAY_ENABLED}
-
-      SPRING_LOGGING_LEVEL_ROOT: ${SPRING_LOGGING_LEVEL_ROOT}
-      SPRING_LOGGING_LEVEL_RU_JADEGG2568_POSTIFY: ${SPRING_LOGGING_LEVEL_APP}
-
-      POSTIFY_SESSION_SECRETKEY: ${POSTIFY_SESSION_SECRETKEY}
-      POSTIFY_SESSION_EXPIRATION: ${POSTIFY_SESSION_EXPIRATION}
-      POSTIFY_SESSION_REFRESHEXPIRATION: ${POSTIFY_SESSION_REFRESHEXPIRATION}
-      POSTIFY_SESSION_EXPIREDDELETING_DELAY: ${POSTIFY_SESSION_EXPIREDDELETING_DELAY}
-      POSTIFY_SESSION_EXPIREDDELETING_COUNT: ${POSTIFY_SESSION_EXPIREDDELETING_COUNT}
-
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/${DB_NAME}
+      SPRING_DATASOURCE_USERNAME: ${DB_USER}
+      SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
+      SPRING_JPA_HIBERNATE_DDL_AUTO: validate
+      POSTIFY_SESSION_SECRETKEY: ${SESSION_SECRET_KEY}
     depends_on:
       postgres:
         condition: service_healthy
     networks:
-      - postify-net
+      - postify-network
+    restart: unless-stopped
+
+  nginx:
+    image: nginx:alpine
+    container_name: postify-nginx
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - postify-app
+    networks:
+      - postify-network
+    restart: unless-stopped
 
 volumes:
   postgres-data:
 
 networks:
-  postify-net:
+  postify-network:
     driver: bridge
