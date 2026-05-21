@@ -26,7 +26,6 @@ services:
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/${DB_NAME}
       SPRING_DATASOURCE_USERNAME: ${DB_USER}
       SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
-      SPRING_JPA_HIBERNATE_DDL_AUTO: validate
       POSTIFY_SESSION_SECRETKEY: ${SESSION_SECRET_KEY}
     depends_on:
       postgres:
@@ -44,8 +43,6 @@ services:
     volumes:
       - ./nginx.conf:/etc/nginx/nginx.conf:ro
       - ./ssl:/etc/nginx/ssl:ro # ssl files
-    depends_on:
-      - postify-app
     networks:
       - postify-network
     restart: unless-stopped
