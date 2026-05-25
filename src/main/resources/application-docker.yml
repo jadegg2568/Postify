@@ -48,11 +48,11 @@ logging:
 
 postify:
   session:
-    secretKey: ${POSTIFY_SESSION_SECRETKEY}
+    secretKey: ${POSTIFY_SESSION_SECRET_KEY}
 
-    expiration: ${POSTIFY_SESSION_EXPIRATION:PT1H}
-    refreshExpiration: ${POSTIFY_SESSION_REFRESH_EXPIRATION:P30D}
+    expiration: ${POSTIFY_SESSION_EXPIRATION:1h}
+    refreshExpiration: ${POSTIFY_SESSION_REFRESH_EXPIRATION:30d}
 
     expiredDeleting:
-      delay: ${POSTIFY_SESSION_EXPIRED_DELETING_DELAY:PT5M}
+      delay: ${POSTIFY_SESSION_EXPIRED_DELETING_DELAY:5m}
       count: ${POSTIFY_SESSION_EXPIRED_DELETING_COUNT:10000}
