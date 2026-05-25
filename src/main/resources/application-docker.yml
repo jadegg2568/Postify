@@ -46,6 +46,12 @@ logging:
     root: ${SPRING_LOGGING_LEVEL_ROOT:INFO}
     ru.jadegg2568.Postify: ${SPRING_LOGGING_LEVEL_APP:DEBUG}
 
+minio:
+  endpoint: ${OBJECT_STORAGE_ENDPOINT:http://localhost:9000}
+  access-key: ${OBJECT_STORAGE_USER:minioadmin}
+  secret-key: ${OBJECT_STORAGE_PASSWORD:minioadmin123}
+  bucket: ${OBJECT_STORAGE_BUCKET:postify-files}
+
 postify:
   session:
     secretKey: ${POSTIFY_SESSION_SECRET_KEY}

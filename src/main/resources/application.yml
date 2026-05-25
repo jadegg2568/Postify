@@ -47,6 +47,12 @@ logging:
     root: INFO
     ru.jadegg2568.Postify: DEBUG
 
+minio:
+  endpoint: http://localhost:9000
+  access-key: minioadmin
+  secret-key: minioadmin123
+  bucket: postify-files
+
 postify:
   session:
     secretKey: yEk<Cjzh%oAwAR9y0:&Uq|AmS$F|A*yw
