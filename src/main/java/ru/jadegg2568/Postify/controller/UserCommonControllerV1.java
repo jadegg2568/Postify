@@ -17,12 +17,11 @@ import ru.jadegg2568.Postify.response.UserResponse;
 import ru.jadegg2568.Postify.security.UuidUserDetails;
 import ru.jadegg2568.Postify.service.UserService;
 
-import java.util.List;
 import java.util.UUID;
 
 @Tag(
         name = "User Controller V1",
-        description = "User non-auth operations API"
+        description = "User API (authentication required)"
 )
 @ApiResponses({
         @ApiResponse(responseCode = "500", description = "Internal server error"),
@@ -32,12 +31,11 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/v1/users")
 @RequiredArgsConstructor
-public class UserControllerV1 {
+public class UserCommonControllerV1 {
 
     private final UserService userService;
     private final UserMapper userMapper;
 
-    // Patch /{uuid}
     @Operation(
             summary = "Update user profile",
             description = "Updates user profile data for authenticated user"
@@ -56,7 +54,6 @@ public class UserControllerV1 {
         return ResponseEntity.ok(userMapper.toResponse(user));
     }
 
-    // DELETE /{uuid}
     @Operation(
             summary = "Delete user",
             description = "Deletes user account by UUID"
@@ -70,50 +67,5 @@ public class UserControllerV1 {
     public ResponseEntity<Void> delete(@AuthenticationPrincipal UuidUserDetails details, @PathVariable UUID uuid) {
         userService.delete(uuid);
         return ResponseEntity.noContent().build();
-    }
-
-    // public
-    // GET /{uuid}
-    @Operation(
-            summary = "Get user by UUID",
-            description = "Returns user information by unique identifier"
-    )
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "User found"),
-            @ApiResponse(responseCode = "404", description = "User not found")
-    })
-    @GetMapping("/{uuid}")
-    public ResponseEntity<UserResponse> getUserByUuid(@PathVariable UUID uuid) {
-        User user = userService.getByUuid(uuid);
-        return ResponseEntity.ok(userMapper.toResponse(user));
-    }
-
-    // public
-    // GET ?name={name}
-    @Operation(
-            summary = "Get user by name",
-            description = "Finds user by unique username"
-    )
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "User found"),
-            @ApiResponse(responseCode = "404", description = "User not found")
-    })
-    @GetMapping
-    public ResponseEntity<UserResponse> getUserByName(@RequestParam String name) {
-        User user = userService.getByName(name);
-        return ResponseEntity.ok(userMapper.toResponse(user));
-    }
-
-    // public
-    // GET /search?q={query}
-    @Operation(
-            summary = "Search users",
-            description = "Search users by partial query string"
-    )
-    @ApiResponse(responseCode = "200", description = "List of matching users")
-    @GetMapping("/search")
-    public ResponseEntity<List<UserResponse>> searchUsers(@RequestParam String q) {
-        List<User> users = userService.searchUsers(q);
-        return ResponseEntity.ok(users.stream().map(userMapper::toResponse).toList());
     }
 }
