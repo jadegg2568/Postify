@@ -4,17 +4,20 @@ import io.minio.*;
 import io.minio.http.Method;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import ru.jadegg2568.Postify.config.MinioConfig;
+import ru.jadegg2568.Postify.exception.file.FileDeleteException;
+import ru.jadegg2568.Postify.exception.file.FileDownloadException;
+import ru.jadegg2568.Postify.exception.file.FileUploadException;
 
-import java.io.InputStream;
 import java.util.UUID;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
-public class MinioService {
+public class FileService {
     private final MinioConfig minioConfig;
     private final MinioClient minioClient;
 
@@ -28,10 +31,10 @@ public class MinioService {
                 minioClient.makeBucket(
                         MakeBucketArgs.builder().bucket(minioConfig.getBucketName()).build()
                 );
-                System.out.println("Bucket '" + minioConfig.getBucketName() + "' created");
+                log.info("Bucket {} created", minioConfig.getBucketName());
             }
         } catch (Exception e) {
-            throw new RuntimeException("Failed to create bucket: " + minioConfig.getBucketName(), e);
+            throw new RuntimeException("Failed to start Minio S3 with bucket " + minioConfig.getBucketName(), e);
         }
     }
 
@@ -50,24 +53,25 @@ public class MinioService {
 
             return objectName;
         } catch (Exception e) {
-            throw new RuntimeException("Failed to upload file: " + file.getOriginalFilename(), e);
+            throw new FileUploadException();
         }
     }
 
-    public InputStream downloadFile(String objectName) {
+    public String getPresignedUrl(String objectName) {
         try {
-            return minioClient.getObject(
-                    GetObjectArgs.builder()
+            return minioClient.getPresignedObjectUrl(
+                    GetPresignedObjectUrlArgs.builder()
                             .bucket(minioConfig.getBucketName())
                             .object(objectName)
+                            .method(Method.GET)
                             .build()
             );
         } catch (Exception e) {
-            throw new RuntimeException("Failed to download file: " + objectName, e);
+            throw new FileDownloadException();
         }
     }
 
-    public String getPresignedUrl(String objectName, int expirySeconds) {
+    public String getPresignedUrlTemporarily(String objectName, int expirySeconds) {
         try {
             return minioClient.getPresignedObjectUrl(
                     GetPresignedObjectUrlArgs.builder()
@@ -78,7 +82,7 @@ public class MinioService {
                             .build()
             );
         } catch (Exception e) {
-            throw new RuntimeException("Failed to generate presigned URL for: " + objectName, e);
+            throw new FileDownloadException();
         }
     }
 
@@ -91,7 +95,7 @@ public class MinioService {
                             .build()
             );
         } catch (Exception e) {
-            throw new RuntimeException("Failed to delete file: " + objectName, e);
+            throw new FileDeleteException();
         }
     }
 }
