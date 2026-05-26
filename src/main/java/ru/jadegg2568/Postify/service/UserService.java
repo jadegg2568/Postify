@@ -26,7 +26,7 @@ public class UserService {
     public User updateProfile(UUID uuid, UpdateProfileRequest request) {
         log.debug("Updating profile for user UUID: {}", uuid);
         User user = userRepository.findByUuid(uuid)
-                .orElseThrow(NotAuthorizedException::new);
+                .orElseThrow(UserNotFoundException::new);
 
         userMapper.updateEntity(request, user);
         log.info("Profile updated for user UUID: {}", uuid);
@@ -47,12 +47,10 @@ public class UserService {
     @Transactional
     public void delete(UUID uuid) {
         log.debug("Delete request for user UUID: {}", uuid);
-        if (!userRepository.existsByUuid(uuid)) {
-            log.warn("Delete failed - user not found: {}", uuid);
-            throw new NotAuthorizedException();
-        }
+        User user = userRepository.findByUuid(uuid)
+                .orElseThrow(UserNotFoundException::new);
 
-        userRepository.deleteByUuid(uuid);
+        userRepository.delete(user);
         log.info("User deleted: {}", uuid);
     }
 

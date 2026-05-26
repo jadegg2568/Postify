@@ -1,5 +1,6 @@
 package ru.jadegg2568.Postify;
 
+import com.github.dockerjava.api.exception.NotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -98,7 +99,7 @@ class UserServiceTest {
         when(userRepository.findByUuid(uuid)).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> userService.updateProfile(uuid, updateProfileRequest))
-                .isInstanceOf(NotAuthorizedException.class);
+                .isInstanceOf(UserNotFoundException.class);
     }
 
     @Test
@@ -148,25 +149,25 @@ class UserServiceTest {
     @DisplayName("delete - должен удалить пользователя когда он найден")
     void delete_ShouldDeleteMeUser_WhenUserExists() {
         // given
-        when(userRepository.existsByUuid(uuid)).thenReturn(true);
-        doNothing().when(userRepository).deleteByUuid(uuid);
+        when(userRepository.findByUuid(uuid)).thenReturn(Optional.of(user));
+        doNothing().when(userRepository).delete(user);
 
         // when
         userService.delete(uuid);
 
         // then
-        verify(userRepository).deleteByUuid(uuid);
+        verify(userRepository).delete(user);
     }
 
     @Test
     @DisplayName("delete - должен выбросить ошибку если пользователь не найден")
     void delete_ShouldThrowException_WhenUserNotFound() {
         // given
-        when(userRepository.existsByUuid(uuid)).thenReturn(false);
+        when(userRepository.findByUuid(uuid)).thenReturn(Optional.empty());
 
         // when & then
         assertThatThrownBy(() -> userService.delete(uuid))
-                .isInstanceOf(NotAuthorizedException.class);
+                .isInstanceOf(UserNotFoundException.class);
         
         verify(userRepository, never()).deleteByUuid(any());
     }
