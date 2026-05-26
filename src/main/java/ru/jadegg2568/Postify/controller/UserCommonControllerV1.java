@@ -37,34 +37,51 @@ public class UserCommonControllerV1 {
     private final UserMapper userMapper;
 
     @Operation(
-            summary = "Update user profile",
-            description = "Updates user profile data for authenticated user"
+            summary = "Update current user profile",
+            description = "Updates profile data for the authenticated user"
     )
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Profile updated successfully"),
-            @ApiResponse(responseCode = "401", description = "Unauthorized (invalid or missing auth)")
+            @ApiResponse(responseCode = "400", description = "Invalid request data"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized")
     })
-    @PatchMapping("/{uuid}")
-    @PreAuthorize("hasRole('ADMIN') or #uuid == authentication.principal.uuid")
+    @PatchMapping("/me")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<UserResponse> update(
             @AuthenticationPrincipal UuidUserDetails details,
-            @PathVariable UUID uuid,
             @Valid @RequestBody UpdateProfileRequest request) {
-        User user = userService.updateProfile(uuid, request);
+        User user = userService.updateProfile(details.uuid(), request);
         return ResponseEntity.ok(userMapper.toResponse(user));
     }
 
     @Operation(
-            summary = "Delete user",
-            description = "Deletes user account by UUID"
+            summary = "Delete current user account",
+            description = "Permanently deletes the authenticated user's account. This action is irreversible."
     )
     @ApiResponses({
             @ApiResponse(responseCode = "204", description = "User deleted successfully"),
-            @ApiResponse(responseCode = "401", description = "Unauthorized access")
+            @ApiResponse(responseCode = "401", description = "Unauthorized")
+    })
+    @DeleteMapping("/me")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<Void> deleteSelf(@AuthenticationPrincipal UuidUserDetails details) {
+        userService.delete(details.uuid());
+        return ResponseEntity.noContent().build();
+    }
+
+    @Operation(
+            summary = "Delete user by UUID (Admin only)",
+            description = "Deletes any user account by UUID. Requires ADMIN role."
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "204", description = "User deleted successfully"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized"),
+            @ApiResponse(responseCode = "403", description = "Forbidden - requires ADMIN role"),
+            @ApiResponse(responseCode = "404", description = "User not found")
     })
     @DeleteMapping("/{uuid}")
-    @PreAuthorize("hasRole('ADMIN') or #uuid == authentication.principal.uuid")
-    public ResponseEntity<Void> delete(@AuthenticationPrincipal UuidUserDetails details, @PathVariable UUID uuid) {
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Void> deleteByAdmin(@PathVariable UUID uuid) {
         userService.delete(uuid);
         return ResponseEntity.noContent().build();
     }

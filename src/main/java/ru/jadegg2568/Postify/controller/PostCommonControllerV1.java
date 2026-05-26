@@ -8,6 +8,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import ru.jadegg2568.Postify.entity.Post;
@@ -46,6 +47,7 @@ public class PostCommonControllerV1 {
             @ApiResponse(responseCode = "404", description = "Reply post not found")
     })
     @PostMapping
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<PostResponse> create(
             @AuthenticationPrincipal UuidUserDetails details,
             @Valid @RequestBody PostCreateRequest request,
@@ -65,6 +67,7 @@ public class PostCommonControllerV1 {
             @ApiResponse(responseCode = "404", description = "Post not found")
     })
     @PatchMapping("/{uuid}")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<PostResponse> update(
             @AuthenticationPrincipal UuidUserDetails details,
             @PathVariable UUID uuid,
@@ -83,6 +86,7 @@ public class PostCommonControllerV1 {
             @ApiResponse(responseCode = "404", description = "Post not found")
     })
     @DeleteMapping("/{uuid}")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<Void> delete(
             @AuthenticationPrincipal UuidUserDetails details,
             @PathVariable UUID uuid
