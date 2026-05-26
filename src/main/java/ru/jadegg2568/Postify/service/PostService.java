@@ -4,19 +4,23 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.jadegg2568.Postify.entity.Post;
 import ru.jadegg2568.Postify.entity.User;
+import ru.jadegg2568.Postify.exception.auth.NoAccessException;
 import ru.jadegg2568.Postify.exception.post.PostNotFoundException;
 import ru.jadegg2568.Postify.mapper.PostMapper;
+import ru.jadegg2568.Postify.mapper.UserMapper;
 import ru.jadegg2568.Postify.repository.PostRepository;
+import ru.jadegg2568.Postify.repository.UserRepository;
 import ru.jadegg2568.Postify.request.PostCreateRequest;
 import ru.jadegg2568.Postify.request.PostUpdateRequest;
 import ru.jadegg2568.Postify.security.UuidUserDetails;
 
+import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -87,7 +91,7 @@ public class PostService {
                 .anyMatch(a -> "ROLE_ADMIN".equals(a.getAuthority()));
 
         if (!isAdmin && !actorUuid.equals(ownerUuid)) {
-            throw new AccessDeniedException("You can only modify your own posts");
+            throw new NoAccessException();
         }
     }
 }

@@ -26,7 +26,7 @@ public class UserService {
     public User updateProfile(UUID uuid, UpdateProfileRequest request) {
         log.debug("Updating profile for user UUID: {}", uuid);
         User user = userRepository.findByUuid(uuid)
-                .orElseThrow(UserNotFoundException::new);
+                .orElseThrow(NotAuthorizedException::new);
 
         userMapper.updateEntity(request, user);
         log.info("Profile updated for user UUID: {}", uuid);
