@@ -5,11 +5,13 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.jspecify.annotations.NonNull;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.jadegg2568.Postify.entity.User;
 import ru.jadegg2568.Postify.mapper.UserMapper;
 import ru.jadegg2568.Postify.response.UserResponse;
+import ru.jadegg2568.Postify.service.FileService;
 import ru.jadegg2568.Postify.service.UserService;
 
 import java.util.List;
@@ -26,9 +28,9 @@ import java.util.UUID;
 @RequestMapping("/v1/users")
 @RequiredArgsConstructor
 public class UserPublicControllerV1 {
-
     private final UserService userService;
     private final UserMapper userMapper;
+    private final FileService fileService;
 
     @Operation(
             summary = "Get user by UUID",
@@ -41,7 +43,7 @@ public class UserPublicControllerV1 {
     @GetMapping("/{uuid}")
     public ResponseEntity<UserResponse> getUserByUuid(@PathVariable UUID uuid) {
         User user = userService.getByUuid(uuid);
-        return ResponseEntity.ok(userMapper.toResponse(user));
+        return ResponseEntity.ok(getUserResponse(user));
     }
 
     @Operation(
@@ -55,7 +57,7 @@ public class UserPublicControllerV1 {
     @GetMapping
     public ResponseEntity<UserResponse> getUserByName(@RequestParam String name) {
         User user = userService.getByName(name);
-        return ResponseEntity.ok(userMapper.toResponse(user));
+        return ResponseEntity.ok(getUserResponse(user));
     }
 
     @Operation(
@@ -66,6 +68,12 @@ public class UserPublicControllerV1 {
     @GetMapping("/search")
     public ResponseEntity<List<UserResponse>> searchUsers(@RequestParam String q) {
         List<User> users = userService.searchUsers(q);
-        return ResponseEntity.ok(users.stream().map(userMapper::toResponse).toList());
+        return ResponseEntity.ok(users.stream().map(this::getUserResponse).toList());
+    }
+
+    private @NonNull UserResponse getUserResponse(User user) {
+        String avatarKey = user.getAvatarKey();
+        String avatarUrl = (avatarKey != null) ? fileService.getPresignedUrl(avatarKey) : null;
+        return userMapper.toResponse(user, avatarUrl);
     }
 }

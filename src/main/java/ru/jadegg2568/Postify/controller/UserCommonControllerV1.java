@@ -6,15 +6,18 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import ru.jadegg2568.Postify.entity.User;
 import ru.jadegg2568.Postify.mapper.UserMapper;
 import ru.jadegg2568.Postify.request.UpdateProfileRequest;
 import ru.jadegg2568.Postify.response.UserResponse;
 import ru.jadegg2568.Postify.security.UuidUserDetails;
+import ru.jadegg2568.Postify.service.FileService;
 import ru.jadegg2568.Postify.service.UserService;
 
 import java.util.UUID;
@@ -32,9 +35,9 @@ import java.util.UUID;
 @RequestMapping("/v1/users")
 @RequiredArgsConstructor
 public class UserCommonControllerV1 {
-
     private final UserService userService;
     private final UserMapper userMapper;
+    private final FileService fileService;
 
     @Operation(
             summary = "Update current user profile",
@@ -51,7 +54,25 @@ public class UserCommonControllerV1 {
             @AuthenticationPrincipal UuidUserDetails details,
             @Valid @RequestBody UpdateProfileRequest request) {
         User user = userService.updateProfile(details.uuid(), request);
-        return ResponseEntity.ok(userMapper.toResponse(user));
+        String avatarUrl = fileService.getPresignedUrl(user.getAvatarKey());
+        return ResponseEntity.ok(userMapper.toResponse(user, avatarUrl));
+    }
+
+    @Operation(
+            summary = "Update photo",
+            description = "Updates user photo and gives url"
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "204", description = "Avatar updated successfully"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized")
+    })
+    @PutMapping(value = "/me/avatar", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<String> updateAvatar(
+            @AuthenticationPrincipal UuidUserDetails details,
+            MultipartFile file) {
+        String url = userService.updateAvatar(details.uuid(), file);
+        return ResponseEntity.ok(url);
     }
 
     @Operation(

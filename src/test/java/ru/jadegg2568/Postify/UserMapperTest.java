@@ -39,10 +39,10 @@ class UserMapperTest {
         assertThat(result.getUuid()).isNull(); // ignored
         assertThat(result.getMail()).isEqualTo("test@example.com");
         assertThat(result.getName()).isEqualTo("testuser");
-        assertThat(result.getPasswordHash()).isNull(); // ignored (хэшируется отдельно)
+        assertThat(result.getPasswordHash()).isNull(); // ignored (not in service layer)
         assertThat(result.getDisplayName()).isEqualTo("My Display Name");
         assertThat(result.getDescription()).isEqualTo("This is my bio");
-        assertThat(result.getPhotoKey()).isNull(); // ignored
+        assertThat(result.getAvatarKey()).isNull(); // ignored
         assertThat(result.getCreatedAt()).isNull(); // ignored
     }
 
@@ -73,17 +73,18 @@ class UserMapperTest {
     @DisplayName("toResponse - должен преобразовать User в UserResponse")
     void toResponse_ShouldMapUserToUserResponse() {
         // given
+        String avatarKey = "s3://bucket/photo.jpg";
         User user = User.builder()
                 .uuid(UUID.fromString("123e4567-e89b-12d3-a456-426614174000"))
                 .mail("user@example.com")
                 .name("username")
                 .displayName("Display Name")
                 .description("User description")
-                .photoKey("s3://bucket/photo.jpg")
+                .avatarKey(avatarKey)
                 .build();
 
         // when
-        UserResponse result = userMapper.toResponse(user);
+        UserResponse result = userMapper.toResponse(user, avatarKey);
 
         // then
         assertThat(result).isNotNull();
@@ -103,11 +104,11 @@ class UserMapperTest {
                 .name(null)
                 .displayName(null)
                 .description(null)
-                .photoKey(null)
+                .avatarKey(null)
                 .build();
 
         // when
-        UserResponse result = userMapper.toResponse(user);
+        UserResponse result = userMapper.toResponse(user, null);
 
         // then
         assertThat(result).isNotNull();
@@ -129,7 +130,7 @@ class UserMapperTest {
                 .passwordHash("oldHash")
                 .displayName("Old Display")
                 .description("Old description")
-                .photoKey("old/photo.jpg")
+                .avatarKey("old/photo.jpg")
                 .build();
 
         UpdateProfileRequest request = new UpdateProfileRequest(
@@ -146,7 +147,7 @@ class UserMapperTest {
         assertThat(existingUser.getUuid()).isEqualTo(UUID.fromString("123e4567-e89b-12d3-a456-426614174000"));
         assertThat(existingUser.getMail()).isEqualTo("old@example.com"); // ignored
         assertThat(existingUser.getPasswordHash()).isEqualTo("oldHash"); // ignored
-        assertThat(existingUser.getPhotoKey()).isEqualTo("old/photo.jpg"); // ignored
+        assertThat(existingUser.getAvatarKey()).isEqualTo("old/photo.jpg"); // ignored
         
         assertThat(existingUser.getName()).isEqualTo("newname");
         assertThat(existingUser.getDisplayName()).isEqualTo("New Display Name");

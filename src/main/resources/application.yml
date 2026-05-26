@@ -50,7 +50,7 @@ logging:
 minio:
   endpoint: http://localhost:9000
   access-key: minioadmin
-  secret-key: minioadmin123
+  secret-key: minioadmin
   bucket: postify-files
 
 postify:

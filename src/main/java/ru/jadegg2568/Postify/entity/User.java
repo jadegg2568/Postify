@@ -43,7 +43,7 @@ public class User {
     private String description;
 
     // S3 image key
-    private String photoKey;
+    private String avatarKey;
 
     @Enumerated(EnumType.ORDINAL) // numeric type from id
     @Column(columnDefinition = "SMALLINT", nullable = false)

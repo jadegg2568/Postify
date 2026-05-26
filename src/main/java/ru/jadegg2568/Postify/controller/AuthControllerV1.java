@@ -19,7 +19,9 @@ import ru.jadegg2568.Postify.request.RefreshRequest;
 import ru.jadegg2568.Postify.request.RegisterRequest;
 import ru.jadegg2568.Postify.response.SessionRefreshResponse;
 import ru.jadegg2568.Postify.response.SessionResponse;
+import ru.jadegg2568.Postify.response.UserResponse;
 import ru.jadegg2568.Postify.service.AuthService;
+import ru.jadegg2568.Postify.service.FileService;
 import ru.jadegg2568.Postify.service.SessionService;
 
 @Tag(
@@ -38,6 +40,7 @@ public class AuthControllerV1 {
 
     private final AuthService authService;
     private final SessionService sessionService;
+    private final FileService fileService;
     private final UserMapper userMapper;
 
     // public
@@ -98,6 +101,12 @@ public class AuthControllerV1 {
         String token = sessionService.generateToken(user, session);
 
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(new SessionResponse(refreshToken, token, user.getUuid(), userMapper.toResponse(user)));
+                .body(new SessionResponse(refreshToken, token, user.getUuid(), getUserResponse(user)));
+    }
+
+    private @NonNull UserResponse getUserResponse(User user) {
+        String avatarKey = user.getAvatarKey();
+        String avatarUrl = (avatarKey != null) ? fileService.getPresignedUrl(avatarKey) : null;
+        return userMapper.toResponse(user, avatarUrl);
     }
 }

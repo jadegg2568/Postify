@@ -4,13 +4,13 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+import ru.jadegg2568.Postify.entity.Permissions;
 import ru.jadegg2568.Postify.entity.User;
-import ru.jadegg2568.Postify.exception.auth.NotAuthorizedException;
 import ru.jadegg2568.Postify.exception.user.UserNotFoundException;
 import ru.jadegg2568.Postify.mapper.UserMapper;
 import ru.jadegg2568.Postify.repository.UserRepository;
 import ru.jadegg2568.Postify.request.UpdateProfileRequest;
-import ru.jadegg2568.Postify.entity.Permissions;
 
 import java.util.List;
 import java.util.UUID;
@@ -21,6 +21,7 @@ import java.util.UUID;
 public class UserService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
+    private final FileService fileService;
 
     @Transactional
     public User updateProfile(UUID uuid, UpdateProfileRequest request) {
@@ -42,6 +43,19 @@ public class UserService {
 
         user.setPermissions(newPermissions);
         log.info("Rights updated for user UUID: {} to: {}", uuid, newPermissions);
+    }
+
+    @Transactional
+    public String updateAvatar(UUID uuid, MultipartFile file) {
+        log.debug("Updating avatar for user UUID: {}", uuid);
+        User user = userRepository.findByUuid(uuid)
+                .orElseThrow(UserNotFoundException::new);
+
+        String key = fileService.uploadFile(file);
+        user.setAvatarKey(key);
+        String url = fileService.getPresignedUrl(key);
+        log.info("Avatar updated for user UUID: {}, new URL: {}", uuid, url);
+        return url;
     }
 
     @Transactional

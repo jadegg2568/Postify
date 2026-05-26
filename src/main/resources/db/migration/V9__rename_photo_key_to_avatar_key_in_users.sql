@@ -1,0 +1,1 @@
+ALTER TABLE users RENAME COLUMN photo_key TO avatar_key;
