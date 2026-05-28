@@ -12,6 +12,5 @@ import ru.jadegg2568.Postify.response.SessionResponse;
 )
 public interface SessionMapper {
 
-    @Mapping(target = "userUuid", source = "user.uuid")
     SessionResponse toResponse(Session session);
 }

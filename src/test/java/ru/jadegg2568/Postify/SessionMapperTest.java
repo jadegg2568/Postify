@@ -42,7 +42,6 @@ class SessionMapperTest {
 
         // then
         assertThat(result.uuid()).isEqualTo(sessionUuid);
-        assertThat(result.userUuid()).isEqualTo(userUuid);
         assertThat(result.title()).isEqualTo("device-1");
         assertThat(result.cancelled()).isTrue();
         assertThat(result.expiresAt()).isEqualTo(expiresAt);

@@ -63,6 +63,5 @@ class AuthMapperTest {
         assertThat(result.uuid()).isEqualTo(userUuid);
         assertThat(result.data()).isEqualTo(userResponse);
         assertThat(result.session().uuid()).isEqualTo(sessionUuid);
-        assertThat(result.session().userUuid()).isEqualTo(userUuid);
     }
 }
