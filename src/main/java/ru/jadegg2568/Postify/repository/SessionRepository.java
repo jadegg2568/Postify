@@ -26,6 +26,7 @@ public interface SessionRepository extends JpaRepository<Session, Long> {
             );
 
     List<Session> findByUserId(Long userId);
+    List<Session> findByUserIdAndUuid(Long userId, UUID sessionUuid);
 
     @Query("""
     SELECT s.id FROM Session s

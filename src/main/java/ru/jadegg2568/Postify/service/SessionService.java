@@ -81,14 +81,14 @@ public class SessionService {
     }
 
     @Transactional
-    public void cancelSession(UUID userUuid, UUID uuid) {
+    public void revokeSession(UUID userUuid, UUID uuid) {
         Session session = sessionRepository.findByDetailedInfo(userUuid, uuid)
                 .orElseThrow(SessionNotFoundException::new);
         session.setCancelled(true);
     }
 
     @Transactional
-    public void cancelUserSessions(UUID userUuid) {
+    public void revokeSessions(UUID userUuid) {
         User user = userService.getByUuid(userUuid);
         List<Session> sessions = sessionRepository.findByUserId(user.getId());
         sessions.forEach(s -> s.setCancelled(true));
@@ -103,16 +103,15 @@ public class SessionService {
         log.info("Deleted {} expired sessions", ids.size());
     }
 
-    public List<Session> findUserSessions(UUID userUuid) {
-        User user = userService.getByUuid(userUuid);
-        return sessionRepository.findByUserId(user.getId());
+    @Transactional(readOnly = true)
+    public Session getSession(UUID userUuid, UUID sessionUuid) {
+        return sessionRepository.findByDetailedInfo(userUuid, sessionUuid)
+                .orElseThrow(SessionNotFoundException::new);
     }
 
-    private static @NonNull String joinLastSessions(List<Session> sessions) {
-        return sessions.stream()
-                .sorted(Comparator.comparing(Session::getCreatedAt).reversed())
-                .limit(5)
-                .map(s -> s.getUuid().toString())
-                .collect(Collectors.joining(", "));
+    @Transactional(readOnly = true)
+    public List<Session> getSessions(UUID userUuid) {
+        User user = userService.getByUuid(userUuid);
+        return sessionRepository.findByUserId(user.getId());
     }
 }

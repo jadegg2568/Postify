@@ -13,12 +13,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.jadegg2568.Postify.entity.Session;
 import ru.jadegg2568.Postify.entity.User;
+import ru.jadegg2568.Postify.mapper.AuthMapper;
 import ru.jadegg2568.Postify.mapper.UserMapper;
 import ru.jadegg2568.Postify.request.LoginRequest;
 import ru.jadegg2568.Postify.request.RefreshRequest;
 import ru.jadegg2568.Postify.request.RegisterRequest;
+import ru.jadegg2568.Postify.response.AuthResponse;
 import ru.jadegg2568.Postify.response.SessionRefreshResponse;
-import ru.jadegg2568.Postify.response.SessionResponse;
 import ru.jadegg2568.Postify.response.UserResponse;
 import ru.jadegg2568.Postify.service.AuthService;
 import ru.jadegg2568.Postify.service.FileService;
@@ -42,6 +43,7 @@ public class AuthControllerV1 {
     private final SessionService sessionService;
     private final FileService fileService;
     private final UserMapper userMapper;
+    private final AuthMapper authMapper;
 
     // public
     // POST /register
@@ -55,7 +57,7 @@ public class AuthControllerV1 {
             @ApiResponse(responseCode = "409", description = "User already exists with given unique fields")
     })
     @PostMapping("/register")
-    public ResponseEntity<SessionResponse> register(@Valid @RequestBody RegisterRequest request) {
+    public ResponseEntity<AuthResponse> register(@Valid @RequestBody RegisterRequest request) {
         User user = authService.register(request);
         return createSessionAndTokens(user);
     }
@@ -71,7 +73,7 @@ public class AuthControllerV1 {
             @ApiResponse(responseCode = "400", description = "Invalid credentials format or wrong data")
     })
     @PostMapping("/login")
-    public ResponseEntity<SessionResponse> login(@Valid @RequestBody LoginRequest request) {
+    public ResponseEntity<AuthResponse> login(@Valid @RequestBody LoginRequest request) {
         User user = authService.login(request);
         return createSessionAndTokens(user);
     }
@@ -94,19 +96,24 @@ public class AuthControllerV1 {
                 .body(new SessionRefreshResponse(token));
     }
 
-    private @NonNull ResponseEntity<SessionResponse> createSessionAndTokens(User user) {
+    private @NonNull ResponseEntity<AuthResponse> createSessionAndTokens(User user) {
+        // generate session
         Session session = sessionService.generateSession(user);
 
+        // generate refresh and access tokens
         String refreshToken = sessionService.generateRefreshToken(session);
         String token = sessionService.generateToken(user, session);
 
+        // create response with tokens, session and user data
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(new SessionResponse(refreshToken, token, user.getUuid(), getUserResponse(user)));
+                .body(authMapper.toAuthResponse(session, refreshToken, token, getUserResponse(user)));
     }
 
     private @NonNull UserResponse getUserResponse(User user) {
+        // convert avatarKey into avatarUrl
         String avatarKey = user.getAvatarKey();
         String avatarUrl = (avatarKey != null) ? fileService.getPresignedUrl(avatarKey) : null;
+        // map from user text data and avatarUrl
         return userMapper.toResponse(user, avatarUrl);
     }
 }
