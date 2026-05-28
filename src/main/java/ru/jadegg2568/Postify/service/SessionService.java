@@ -2,11 +2,11 @@ package ru.jadegg2568.Postify.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.jspecify.annotations.NonNull;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.jadegg2568.Postify.config.SessionProperties;
+import ru.jadegg2568.Postify.data.DeviceData;
 import ru.jadegg2568.Postify.entity.Session;
 import ru.jadegg2568.Postify.entity.User;
 import ru.jadegg2568.Postify.exception.auth.SessionExpiredException;
@@ -16,10 +16,9 @@ import ru.jadegg2568.Postify.repository.SessionRepository;
 import ru.jadegg2568.Postify.security.TokenManager;
 
 import java.time.Instant;
-import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -31,14 +30,18 @@ public class SessionService {
     private final TokenManager tokenManager;
 
     @Transactional
-    public Session generateSession(User user) {
+    public Session generateSession(User user, DeviceData deviceData) {
         UUID uuid = UUID.randomUUID();
         Instant expiresAt = Instant.now().plus(sessionProperties.getRefreshExpiration());
+
+        String browser = deviceData.browser();
+        String os = deviceData.os();
 
         Session session = Session.builder()
                 .uuid(uuid)
                 .user(user)
-                .title(uuid.toString())
+                .browser(browser)
+                .os(os)
                 .expiresAt(expiresAt)
                 .build();
 

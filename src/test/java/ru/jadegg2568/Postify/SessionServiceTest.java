@@ -8,6 +8,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import ru.jadegg2568.Postify.config.SessionProperties;
+import ru.jadegg2568.Postify.data.DeviceData;
 import ru.jadegg2568.Postify.entity.Permissions;
 import ru.jadegg2568.Postify.entity.Session;
 import ru.jadegg2568.Postify.entity.User;
@@ -86,10 +87,13 @@ class SessionServiceTest {
         when(sessionRepository.save(any(Session.class)))
                 .thenAnswer(inv -> inv.getArgument(0));
 
-        Session result = sessionService.generateSession(user);
+        DeviceData deviceData = new DeviceData("Chrome 148", "Windows 10 22H2");
+        Session result = sessionService.generateSession(user, deviceData);
 
         assertThat(result).isNotNull();
         assertThat(result.getUser()).isEqualTo(user);
+        assertThat(result.getBrowser()).isEqualTo("Chrome 148");
+        assertThat(result.getOs()).isEqualTo("Windows 10 22H2");
 
         verify(sessionRepository).save(any(Session.class));
     }

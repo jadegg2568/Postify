@@ -24,11 +24,15 @@ public class Session {
 //    @UuidGenerator
     private UUID uuid;
 
-    private String title;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
+
+    @Column(nullable = false)
+    private String browser;
+
+    @Column(nullable = false)
+    private String os;
 
     @Builder.Default
     private boolean cancelled = false;

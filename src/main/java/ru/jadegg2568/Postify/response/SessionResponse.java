@@ -5,7 +5,8 @@ import java.util.UUID;
 
 public record SessionResponse(
         UUID uuid,
-        String title,
+        String browser,
+        String os,
         boolean cancelled,
         Instant expiresAt,
         Instant createdAt

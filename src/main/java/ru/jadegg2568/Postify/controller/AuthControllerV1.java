@@ -5,12 +5,14 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.jspecify.annotations.NonNull;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import ru.jadegg2568.Postify.data.DeviceData;
 import ru.jadegg2568.Postify.entity.Session;
 import ru.jadegg2568.Postify.entity.User;
 import ru.jadegg2568.Postify.mapper.AuthMapper;
@@ -24,6 +26,9 @@ import ru.jadegg2568.Postify.response.UserResponse;
 import ru.jadegg2568.Postify.service.AuthService;
 import ru.jadegg2568.Postify.service.FileService;
 import ru.jadegg2568.Postify.service.SessionService;
+import ru.jadegg2568.Postify.util.RequestDataUtils;
+
+import java.util.Optional;
 
 @Tag(
         name = "Auth Controller V1",
@@ -57,9 +62,12 @@ public class AuthControllerV1 {
             @ApiResponse(responseCode = "409", description = "User already exists with given unique fields")
     })
     @PostMapping("/register")
-    public ResponseEntity<AuthResponse> register(@Valid @RequestBody RegisterRequest request) {
+    public ResponseEntity<AuthResponse> register(HttpServletRequest servletRequest,
+                                                 @Valid @RequestBody RegisterRequest request) {
+        DeviceData deviceData = RequestDataUtils.parseDeviceData(
+                servletRequest.getHeader("User-Agent"));
         User user = authService.register(request);
-        return createSessionAndTokens(user);
+        return createSessionAndTokens(user, deviceData);
     }
 
     // public
@@ -73,9 +81,12 @@ public class AuthControllerV1 {
             @ApiResponse(responseCode = "400", description = "Invalid credentials format or wrong data")
     })
     @PostMapping("/login")
-    public ResponseEntity<AuthResponse> login(@Valid @RequestBody LoginRequest request) {
+    public ResponseEntity<AuthResponse> login(HttpServletRequest servletRequest,
+                                              @Valid @RequestBody LoginRequest request) {
+        DeviceData deviceData = RequestDataUtils.parseDeviceData(
+                servletRequest.getHeader("User-Agent"));
         User user = authService.login(request);
-        return createSessionAndTokens(user);
+        return createSessionAndTokens(user, deviceData);
     }
 
     // public
@@ -96,9 +107,9 @@ public class AuthControllerV1 {
                 .body(new SessionRefreshResponse(token));
     }
 
-    private @NonNull ResponseEntity<AuthResponse> createSessionAndTokens(User user) {
+    private @NonNull ResponseEntity<AuthResponse> createSessionAndTokens(User user, DeviceData deviceData) {
         // generate session
-        Session session = sessionService.generateSession(user);
+        Session session = sessionService.generateSession(user, deviceData);
 
         // generate refresh and access tokens
         String refreshToken = sessionService.generateRefreshToken(session);

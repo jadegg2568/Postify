@@ -31,7 +31,8 @@ class SessionMapperTest {
         Session session = Session.builder()
                 .uuid(sessionUuid)
                 .user(user)
-                .title("device-1")
+                .browser("Chrome 148")
+                .os("Windows 10 22H2")
                 .cancelled(true)
                 .expiresAt(expiresAt)
                 .createdAt(createdAt)
@@ -42,7 +43,8 @@ class SessionMapperTest {
 
         // then
         assertThat(result.uuid()).isEqualTo(sessionUuid);
-        assertThat(result.title()).isEqualTo("device-1");
+        assertThat(result.browser()).isEqualTo("Chrome 148");
+        assertThat(result.os()).isEqualTo("Windows 10 22H2");
         assertThat(result.cancelled()).isTrue();
         assertThat(result.expiresAt()).isEqualTo(expiresAt);
         assertThat(result.createdAt()).isEqualTo(createdAt);
