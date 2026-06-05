@@ -11,16 +11,12 @@ import ru.jadegg2568.Postify.entity.User;
 import ru.jadegg2568.Postify.exception.auth.NoAccessException;
 import ru.jadegg2568.Postify.exception.post.PostNotFoundException;
 import ru.jadegg2568.Postify.mapper.PostMapper;
-import ru.jadegg2568.Postify.mapper.UserMapper;
 import ru.jadegg2568.Postify.repository.PostRepository;
-import ru.jadegg2568.Postify.repository.UserRepository;
 import ru.jadegg2568.Postify.request.PostCreateRequest;
 import ru.jadegg2568.Postify.request.PostUpdateRequest;
 import ru.jadegg2568.Postify.security.UuidUserDetails;
 
-import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -29,6 +25,13 @@ public class PostService {
     private final UserService userService;
     private final PostRepository postRepository;
     private final PostMapper postMapper;
+
+    @Transactional(readOnly = true)
+    public boolean isAuthor(UUID postUuid, UUID actorUuid) {
+        return postRepository.findByUuid(postUuid)
+                .map(post -> post.getAuthor().getUuid().equals(actorUuid))
+                .orElse(false);
+    }
 
     @Transactional
     public Post create(UuidUserDetails details, PostCreateRequest request, UUID replyToUuid) {

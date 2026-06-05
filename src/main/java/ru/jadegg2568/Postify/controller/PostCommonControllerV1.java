@@ -67,7 +67,7 @@ public class PostCommonControllerV1 {
             @ApiResponse(responseCode = "404", description = "Post not found")
     })
     @PatchMapping("/{uuid}")
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasRole('ADMIN') or @postService.isAuthor(#uuid, principal.uuid())")
     public ResponseEntity<PostResponse> update(
             @AuthenticationPrincipal UuidUserDetails details,
             @PathVariable UUID uuid,
@@ -86,7 +86,7 @@ public class PostCommonControllerV1 {
             @ApiResponse(responseCode = "404", description = "Post not found")
     })
     @DeleteMapping("/{uuid}")
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasRole('ADMIN') or @postService.isAuthor(#uuid, principal.uuid())")
     public ResponseEntity<Void> delete(
             @AuthenticationPrincipal UuidUserDetails details,
             @PathVariable UUID uuid
