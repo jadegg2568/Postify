@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 import ru.jadegg2568.Postify.entity.Like;
 import ru.jadegg2568.Postify.entity.LikeId;
+import ru.jadegg2568.Postify.entity.Post;
 
 import java.util.List;
 import java.util.UUID;
@@ -12,8 +13,8 @@ import java.util.UUID;
 @Repository
 public interface LikeRepository extends JpaRepository<Like, LikeId> {
 
-    long countByPost_Uuid(UUID postUuid);
+    long countByPost(Post post);
 
     @EntityGraph(attributePaths = "user")
-    List<Like> findByPost_UuidOrderByCreatedAtAsc(UUID postUuid);
+    List<Like> findByPostOrderByCreatedAtAsc(Post post);
 }

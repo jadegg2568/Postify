@@ -24,75 +24,51 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 public class LikeService {
-    private final PostRepository postRepository;
     private final LikeRepository likeRepository;
-    private final UserService userService;
     private final UserMapper userMapper;
     private final FileService fileService;
 
     @Transactional(readOnly = true)
-    public LikeResponse getLikes(UUID postUuid, boolean showUsers) {
-        postRepository.findByUuid(postUuid)
-                .orElseThrow(PostNotFoundException::new);
+    public long getLikesCount(Post post) {
+        return likeRepository.countByPost(post);
+    }
 
-        long count = likeRepository.countByPost_Uuid(postUuid);
-        if (!showUsers) {
-            return new LikeResponse(count, null);
-        }
-
-        List<UserResponse> users = likeRepository.findByPost_UuidOrderByCreatedAtAsc(postUuid).stream()
+    @Transactional(readOnly = true)
+    public List<User> getLikedUsers(Post post) {
+        return likeRepository.findByPostOrderByCreatedAtAsc(post).stream()
                 .map(Like::getUser)
-                .map(this::toUserResponse)
                 .toList();
-
-        return new LikeResponse(count, users);
     }
 
     @Transactional(noRollbackFor = DataIntegrityViolationException.class)
-    public Post like(UUID authUuid, UUID postUuid) {
-        Post post = postRepository.findByUuid(postUuid)
-                .orElseThrow(PostNotFoundException::new);
-
-        User user = userService.getByUuid(authUuid);
-
+    public Post like(User user, Post post) {
         try {
             Like like = new Like();
             like.setPost(post);
             like.setUser(user);
             likeRepository.save(like);
-            log.info("Post {} liked by user {}", postUuid, authUuid);
+            log.info("Post {} liked by user {}", post.getUuid(), user.getUuid());
 
             // TODO: EDA event
             // notificationEventPublisher.publishLikeEvent(user, post);
         } catch (DataIntegrityViolationException ex) {
-            log.debug("Post {} already liked by user {}", postUuid, authUuid);
+            log.debug("Post {} already liked by user {}", post.getUuid(), user.getUuid());
         }
 
         return post;
     }
 
     @Transactional(noRollbackFor = EmptyResultDataAccessException.class)
-    public Post unlike(UUID authUuid, UUID postUuid) {
-        Post post = postRepository.findByUuid(postUuid)
-                .orElseThrow(PostNotFoundException::new);
-
-        User user = userService.getByUuid(authUuid);
-
+    public Post unlike(User user, Post post) {
         try {
             likeRepository.deleteById(new LikeId(post.getId(), user.getId()));
-            log.info("Like removed from post {} by user {}", postUuid, authUuid);
+            log.info("Like removed from post {} by user {}", post.getUuid(), user.getUuid());
 
             // TODO: EDA event
         } catch (EmptyResultDataAccessException ex) {
-            log.debug("Like not found for post {} by user {}", postUuid, authUuid);
+            log.debug("Like not found for post {} by user {}", post.getUuid(), user.getUuid());
         }
 
         return post;
-    }
-
-    private UserResponse toUserResponse(User user) {
-        String avatarKey = user.getAvatarKey();
-        String avatarUrl = (avatarKey != null) ? fileService.getPresignedUrl(avatarKey) : null;
-        return userMapper.toResponse(user, avatarUrl);
     }
 }

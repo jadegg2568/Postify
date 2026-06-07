@@ -5,16 +5,23 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.jspecify.annotations.NonNull;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import ru.jadegg2568.Postify.entity.Post;
+import ru.jadegg2568.Postify.entity.User;
 import ru.jadegg2568.Postify.mapper.PostMapper;
+import ru.jadegg2568.Postify.mapper.UserMapper;
 import ru.jadegg2568.Postify.response.LikeResponse;
 import ru.jadegg2568.Postify.response.PostResponse;
+import ru.jadegg2568.Postify.response.UserResponse;
 import ru.jadegg2568.Postify.security.UuidUserDetails;
+import ru.jadegg2568.Postify.service.FileService;
 import ru.jadegg2568.Postify.service.LikeService;
+import ru.jadegg2568.Postify.service.PostService;
+import ru.jadegg2568.Postify.service.UserService;
 
 import java.util.UUID;
 
@@ -32,7 +39,11 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class PostLikeControllerV1 {
     private final LikeService likeService;
+    private final PostService postService;
+    private final UserService userService;
     private final PostMapper postMapper;
+    private final UserMapper userMapper;
+    private final FileService fileService;
 
     @Operation(
             summary = "Like post",
@@ -48,8 +59,10 @@ public class PostLikeControllerV1 {
             @AuthenticationPrincipal UuidUserDetails details,
             @PathVariable UUID uuid
     ) {
-        Post post = likeService.like(details.uuid(), uuid);
-        return ResponseEntity.ok(postMapper.toResponse(post));
+        User user = userService.getByUuid(details.uuid());
+        Post post = postService.getByUuid(uuid);
+        Post result = likeService.like(user, post);
+        return ResponseEntity.ok(postMapper.toResponse(result));
     }
 
     @Operation(
@@ -66,8 +79,10 @@ public class PostLikeControllerV1 {
             @AuthenticationPrincipal UuidUserDetails details,
             @PathVariable UUID uuid
     ) {
-        Post post = likeService.unlike(details.uuid(), uuid);
-        return ResponseEntity.ok(postMapper.toResponse(post));
+        User user = userService.getByUuid(details.uuid());
+        Post post = postService.getByUuid(uuid);
+        Post result = likeService.unlike(user, post);
+        return ResponseEntity.ok(postMapper.toResponse(result));
     }
 
     @Operation(
@@ -87,7 +102,21 @@ public class PostLikeControllerV1 {
             @PathVariable UUID uuid,
             @RequestParam(defaultValue = "false") boolean show_users
     ) {
-        LikeResponse response = likeService.getLikes(uuid, show_users);
-        return ResponseEntity.ok(response);
+        Post post = postService.getByUuid(uuid);
+        long count = likeService.getLikesCount(post);
+        if (!show_users) {
+            return ResponseEntity.ok(new LikeResponse(count, null));
+        }
+
+        var users = likeService.getLikedUsers(post).stream()
+                .map(this::getUserResponse)
+                .toList();
+        return ResponseEntity.ok(new LikeResponse(count, users));
+    }
+
+    private @NonNull UserResponse getUserResponse(User user) {
+        String avatarKey = user.getAvatarKey();
+        String avatarUrl = (avatarKey != null) ? fileService.getPresignedUrl(avatarKey) : null;
+        return userMapper.toResponse(user, avatarUrl);
     }
 }
