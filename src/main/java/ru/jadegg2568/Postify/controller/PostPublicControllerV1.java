@@ -72,7 +72,12 @@ public class PostPublicControllerV1 {
                 ? postService.searchByTitle(title, length)
                 : postService.find(length);
 
-        posts.forEach(post -> trackViewIfAuthenticated(details, post));
+        if (details != null && !posts.isEmpty()) {
+            User user = userService.getByUuid(details.uuid());
+            for (Post post : posts) {
+                viewService.viewedPost(user, post);
+            }
+        }
 
         return ResponseEntity.ok(posts.stream().map(postMapper::toResponse).toList());
     }
@@ -81,7 +86,6 @@ public class PostPublicControllerV1 {
         if (details == null) {
             return;
         }
-
         User user = userService.getByUuid(details.uuid());
         viewService.viewedPost(user, post);
     }
