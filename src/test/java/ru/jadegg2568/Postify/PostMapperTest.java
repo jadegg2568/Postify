@@ -89,6 +89,7 @@ class PostMapperTest {
                 .replyTo(replyTo)
                 .title("title")
                 .content("content")
+                .views(42L)
                 .createdAt(createdAt)
                 .build();
 
@@ -101,6 +102,7 @@ class PostMapperTest {
         assertThat(result.replyToUuid()).isEqualTo(replyUuid);
         assertThat(result.title()).isEqualTo("title");
         assertThat(result.content()).isEqualTo("content");
+        assertThat(result.views()).isEqualTo(42L);
         assertThat(result.createdAt()).isEqualTo(createdAt);
 
         assertThat(result.author()).isNotNull();

@@ -62,3 +62,7 @@ postify:
     expiredDeleting:
       delay: ${POSTIFY_SESSION_EXPIRED_DELETING_DELAY:5m}
       count: ${POSTIFY_SESSION_EXPIRED_DELETING_COUNT:10000}
+  views:
+    cleanup-delay: ${POSTIFY_VIEWS_CLEANUP_DELAY:1h}
+    retention-age: ${POSTIFY_VIEWS_RETENTION_AGE:24h}
+    batch-size: ${POSTIFY_VIEWS_BATCH_SIZE:10000}

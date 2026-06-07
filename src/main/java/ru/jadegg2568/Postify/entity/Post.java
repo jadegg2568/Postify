@@ -39,6 +39,10 @@ public class Post {
     @Column(nullable = false, columnDefinition = "TEXT")
     private String content;
 
+    @Builder.Default
+    @Column(nullable = false)
+    private long views = 0;
+
     @CreationTimestamp
     private Instant createdAt;
 }

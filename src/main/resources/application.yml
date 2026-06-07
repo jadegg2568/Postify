@@ -61,3 +61,7 @@ postify:
     expiredDeleting:
       delay: 5m
       count: 10000
+  views:
+    cleanup-delay: 1h
+    retention-age: 24h
+    batch-size: 10000

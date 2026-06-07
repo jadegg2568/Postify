@@ -29,7 +29,7 @@ public class SecurityConfig {
                         // public (without JWT)
                         .requestMatchers("/v1/auth/register", "/v1/auth/login").permitAll()
                         .requestMatchers(HttpMethod.GET, "/v1/users/**").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/v1/posts/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/v1/posts", "/v1/posts/**").permitAll()
                         .requestMatchers("/actuator/**").permitAll()
                         .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
                         // Everything else requires JWT

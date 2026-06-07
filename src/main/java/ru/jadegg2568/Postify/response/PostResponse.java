@@ -8,6 +8,7 @@ public record PostResponse(
         UUID replyToUuid,
         String title,
         String content,
+        long views,
         Instant createdAt,
         UserResponse author
 ) {

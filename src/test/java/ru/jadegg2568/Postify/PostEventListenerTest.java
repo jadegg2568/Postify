@@ -1,0 +1,76 @@
+package ru.jadegg2568.Postify;
+
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.dao.DataIntegrityViolationException;
+import ru.jadegg2568.Postify.entity.Post;
+import ru.jadegg2568.Postify.entity.PostView;
+import ru.jadegg2568.Postify.entity.User;
+import ru.jadegg2568.Postify.event.PostViewedEvent;
+import ru.jadegg2568.Postify.event.PostEventListener;
+import ru.jadegg2568.Postify.repository.PostRepository;
+import ru.jadegg2568.Postify.repository.PostViewRepository;
+import ru.jadegg2568.Postify.repository.UserRepository;
+
+import java.util.UUID;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
+
+@ExtendWith(MockitoExtension.class)
+class PostEventListenerTest {
+
+    @Mock
+    private PostViewRepository postViewRepository;
+
+    @Mock
+    private PostRepository postRepository;
+
+    @Mock
+    private UserRepository userRepository;
+
+    @InjectMocks
+    private PostEventListener listener;
+
+    @Test
+    @DisplayName("onPostViewed - saves view and increments counter")
+    void onPostViewed_ShouldSaveViewAndIncrementCounter() {
+        UUID userUuid = UUID.randomUUID();
+        UUID postUuid = UUID.randomUUID();
+        User user = User.builder().id(10L).uuid(userUuid).name("viewer").build();
+        Post post = Post.builder().id(20L).uuid(postUuid).title("t").content("c").build();
+        PostViewedEvent event = new PostViewedEvent(user, post);
+
+        when(postRepository.getReferenceById(20L)).thenReturn(post);
+        when(userRepository.getReferenceById(10L)).thenReturn(user);
+        when(postViewRepository.save(any(PostView.class))).thenAnswer(inv -> inv.getArgument(0));
+
+        listener.onPostViewed(event);
+
+        verify(postViewRepository).save(any(PostView.class));
+        verify(postRepository).incrementViews(20L);
+    }
+
+    @Test
+    @DisplayName("onPostViewed - ignores duplicate view within retention window")
+    void onPostViewed_ShouldIgnoreDuplicateView() {
+        UUID userUuid = UUID.randomUUID();
+        UUID postUuid = UUID.randomUUID();
+        User user = User.builder().id(10L).uuid(userUuid).name("viewer").build();
+        Post post = Post.builder().id(20L).uuid(postUuid).title("t").content("c").build();
+        PostViewedEvent event = new PostViewedEvent(user, post);
+
+        when(postRepository.getReferenceById(20L)).thenReturn(post);
+        when(userRepository.getReferenceById(10L)).thenReturn(user);
+        when(postViewRepository.save(any(PostView.class)))
+                .thenThrow(new DataIntegrityViolationException("duplicate"));
+
+        listener.onPostViewed(event);
+
+        verify(postRepository, never()).incrementViews(any());
+    }
+}

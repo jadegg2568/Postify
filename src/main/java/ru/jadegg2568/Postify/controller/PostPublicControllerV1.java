@@ -7,11 +7,16 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import ru.jadegg2568.Postify.entity.Post;
+import ru.jadegg2568.Postify.entity.User;
 import ru.jadegg2568.Postify.mapper.PostMapper;
 import ru.jadegg2568.Postify.response.PostResponse;
+import ru.jadegg2568.Postify.security.UuidUserDetails;
 import ru.jadegg2568.Postify.service.PostService;
+import ru.jadegg2568.Postify.service.UserService;
+import ru.jadegg2568.Postify.service.ViewService;
 
 import java.util.List;
 import java.util.UUID;
@@ -28,6 +33,8 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class PostPublicControllerV1 {
     private final PostService postService;
+    private final UserService userService;
+    private final ViewService viewService;
     private final PostMapper postMapper;
 
     @Operation(
@@ -39,8 +46,12 @@ public class PostPublicControllerV1 {
             @ApiResponse(responseCode = "404", description = "Post not found")
     })
     @GetMapping("/{uuid}")
-    public ResponseEntity<PostResponse> getByUuid(@PathVariable UUID uuid) {
+    public ResponseEntity<PostResponse> getByUuid(
+            @PathVariable UUID uuid,
+            @AuthenticationPrincipal UuidUserDetails details
+    ) {
         Post post = postService.getByUuid(uuid);
+        trackViewIfAuthenticated(details, post);
         return ResponseEntity.ok(postMapper.toResponse(post));
     }
 
@@ -54,11 +65,24 @@ public class PostPublicControllerV1 {
     @GetMapping
     public ResponseEntity<List<PostResponse>> getPosts(
             @RequestParam(required = false) String title,
-            @RequestParam(defaultValue = "10") int length) {
+            @RequestParam(defaultValue = "10") int length,
+            @AuthenticationPrincipal UuidUserDetails details
+    ) {
         Page<Post> posts = (title != null)
                 ? postService.searchByTitle(title, length)
                 : postService.find(length);
 
+        posts.forEach(post -> trackViewIfAuthenticated(details, post));
+
         return ResponseEntity.ok(posts.stream().map(postMapper::toResponse).toList());
+    }
+
+    private void trackViewIfAuthenticated(UuidUserDetails details, Post post) {
+        if (details == null) {
+            return;
+        }
+
+        User user = userService.getByUuid(details.uuid());
+        viewService.viewedPost(user, post);
     }
 }
