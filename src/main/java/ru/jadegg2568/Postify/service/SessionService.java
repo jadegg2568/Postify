@@ -74,8 +74,7 @@ public class SessionService {
         }
 
         return tokenManager.generateAccessToken(
-                user.getUuid(),
-                user.getPermissions().getAuthorities()
+                user.getUuid()
         );
     }
 

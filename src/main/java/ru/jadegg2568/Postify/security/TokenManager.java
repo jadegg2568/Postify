@@ -1,5 +1,6 @@
 package ru.jadegg2568.Postify.security;
 
+import com.google.common.collect.Maps;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
@@ -20,10 +21,10 @@ public class TokenManager {
         return Keys.hmacShaKeyFor(sessionProperties.getSecretKey().getBytes());
     }
 
-    public String generateAccessToken(UUID userUuid, Set<String> roles) {
+    public String generateAccessToken(UUID userUuid) {
         return buildToken(
                 userUuid.toString(),
-                Map.of("roles", roles),
+                Maps.newHashMap(),
                 sessionProperties.getExpiration().toMillis()
         );
     }

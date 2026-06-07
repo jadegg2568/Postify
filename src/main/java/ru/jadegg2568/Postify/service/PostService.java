@@ -34,8 +34,8 @@ public class PostService {
     }
 
     @Transactional
-    public Post create(UuidUserDetails details, PostCreateRequest request, UUID replyToUuid) {
-        User author = userService.getByUuid(details.uuid());
+    public Post create(UUID authUuid, PostCreateRequest request, UUID replyToUuid) {
+        User author = userService.getByUuid(authUuid);
 
         Post replyTo = (replyToUuid != null ? postRepository.findByUuid(replyToUuid)
                 .orElseThrow(PostNotFoundException::new) : null);
@@ -47,6 +47,31 @@ public class PostService {
         postRepository.save(post);
         log.info("Post created: {} by {}", post.getUuid(), author.getUuid());
         return post;
+    }
+
+    @Transactional
+    public Post update(UUID authUuid, UUID uuid, PostUpdateRequest request) {
+        User user = userService.getByUuid(authUuid);
+        Post post = postRepository.findByUuid(uuid)
+                .orElseThrow(PostNotFoundException::new);
+
+        requireOwningOrAdmin(user, post);
+        postMapper.updateEntity(request, post);
+
+        log.info("Post updated: {} by {}", uuid, authUuid);
+        return post;
+    }
+
+    @Transactional
+    public void delete(UUID authUuid, UUID uuid) {
+        User user = userService.getByUuid(authUuid);
+        Post post = postRepository.findByUuid(uuid)
+                .orElseThrow(PostNotFoundException::new);
+
+        requireOwningOrAdmin(user, post);
+        postRepository.delete(post);
+
+        log.info("Post deleted: {} by {}", uuid, authUuid);
     }
 
     @Transactional(readOnly = true)
@@ -64,36 +89,13 @@ public class PostService {
         return postRepository.findAll(PageRequest.of(0, length));
     }
 
-    @Transactional
-    public Post update(UuidUserDetails details, UUID uuid, PostUpdateRequest request) {
-        Post post = postRepository.findByUuid(uuid)
-                .orElseThrow(PostNotFoundException::new);
-
-        requireOwnerOrAdmin(details, post);
-        postMapper.updateEntity(request, post);
-
-        log.info("Post updated: {} by {}", uuid, details.uuid());
-        return post;
-    }
-
-    @Transactional
-    public void delete(UuidUserDetails details, UUID uuid) {
-        Post post = postRepository.findByUuid(uuid)
-                .orElseThrow(PostNotFoundException::new);
-
-        requireOwnerOrAdmin(details, post);
-        postRepository.delete(post);
-        log.info("Post deleted: {} by {}", uuid, details.uuid());
-    }
-
-    private static void requireOwnerOrAdmin(UuidUserDetails details, Post post) {
-        UUID actorUuid = details.uuid();
+    private static void requireOwningOrAdmin(User user, Post post) {
+        UUID actorUuid = user.getUuid();
         UUID ownerUuid = post.getAuthor().getUuid();
 
-        boolean isAdmin = details.getAuthorities().stream()
-                .anyMatch(a -> "ROLE_ADMIN".equals(a.getAuthority()));
+        boolean isAdmin = user.getPermissions().isAdmin();
 
-        if (!isAdmin && !actorUuid.equals(ownerUuid)) {
+        if (!actorUuid.equals(ownerUuid) && !isAdmin) {
             throw new NoAccessException();
         }
     }

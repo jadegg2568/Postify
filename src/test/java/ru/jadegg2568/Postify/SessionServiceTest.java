@@ -105,7 +105,7 @@ class SessionServiceTest {
         when(tokenManager.getClaim(refreshToken, "sid", UUID.class)).thenReturn(sessionUuid);
         when(tokenManager.getSubject(refreshToken)).thenReturn(userUuid.toString());
         when(sessionRepository.findByUuid(sessionUuid)).thenReturn(Optional.of(session));
-        when(tokenManager.generateAccessToken(any(), any())).thenReturn("new-access-token");
+        when(tokenManager.generateAccessToken(eq(userUuid))).thenReturn("new-access-token");
 
         // when
         String result = sessionService.generateToken(refreshToken);
@@ -119,7 +119,7 @@ class SessionServiceTest {
     @DisplayName("generateToken (Login) - должен создать access токен без обращения к БД")
     void generateToken_Login_ShouldReturnAccessToken() {
         // given
-        when(tokenManager.generateAccessToken(any(), any())).thenReturn("direct-access-token");
+        when(tokenManager.generateAccessToken(eq(userUuid))).thenReturn("direct-access-token");
 
         // when
         String result = sessionService.generateToken(user, session);

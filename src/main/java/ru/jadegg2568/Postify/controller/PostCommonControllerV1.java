@@ -53,7 +53,7 @@ public class PostCommonControllerV1 {
             @Valid @RequestBody PostCreateRequest request,
             @RequestParam(required = false, name = "reply") UUID replyToUuid
     ) {
-        Post post = postService.create(details, request, replyToUuid);
+        Post post = postService.create(details.uuid(), request, replyToUuid);
         return ResponseEntity.status(HttpStatus.CREATED).body(postMapper.toResponse(post));
     }
 
@@ -73,7 +73,7 @@ public class PostCommonControllerV1 {
             @PathVariable UUID uuid,
             @Valid @RequestBody PostUpdateRequest request
     ) {
-        Post post = postService.update(details, uuid, request);
+        Post post = postService.update(details.uuid(), uuid, request);
         return ResponseEntity.ok(postMapper.toResponse(post));
     }
 
@@ -91,7 +91,7 @@ public class PostCommonControllerV1 {
             @AuthenticationPrincipal UuidUserDetails details,
             @PathVariable UUID uuid
     ) {
-        postService.delete(details, uuid);
+        postService.delete(details.uuid(), uuid);
         return ResponseEntity.noContent().build();
     }
 }

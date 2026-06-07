@@ -8,14 +8,21 @@ import java.util.Set;
 @Getter
 @RequiredArgsConstructor
 public enum Permissions {
-    USER(10, Set.of("ROLE_USER")),
-    ADMIN(20, Set.of("ROLE_USER", "ROLE_ADMIN")),
-    OWNER(30, Set.of("ROLE_USER", "ROLE_ADMIN", "ROLE_OWNER"));
+    USER(10), // standard user
+    ADMIN(20), // admin
+    OWNER(30); // owner (can manage permissions)
 
     private final int id;
-    private final Set<String> authorities;
 
     public boolean isAdmin() {
-        return authorities.contains("ROLE_ADMIN");
+        return id >= ADMIN.id;
+    }
+
+    public Set<String> authorities() {
+        return switch (this) {
+            case USER -> Set.of("ROLE_USER");
+            case ADMIN -> Set.of("ROLE_USER", "ROLE_ADMIN");
+            case OWNER -> Set.of("ROLE_USER", "ROLE_ADMIN", "ROLE_OWNER");
+        };
     }
 }
