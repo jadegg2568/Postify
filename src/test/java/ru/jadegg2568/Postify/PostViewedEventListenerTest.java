@@ -11,7 +11,7 @@ import ru.jadegg2568.Postify.entity.Post;
 import ru.jadegg2568.Postify.entity.PostView;
 import ru.jadegg2568.Postify.entity.User;
 import ru.jadegg2568.Postify.event.PostViewedEvent;
-import ru.jadegg2568.Postify.event.PostEventListener;
+import ru.jadegg2568.Postify.event.listener.PostViewedEventListener;
 import ru.jadegg2568.Postify.repository.PostRepository;
 import ru.jadegg2568.Postify.repository.PostViewRepository;
 import ru.jadegg2568.Postify.repository.UserRepository;
@@ -22,7 +22,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-class PostEventListenerTest {
+class PostViewedEventListenerTest {
 
     @Mock
     private PostViewRepository postViewRepository;
@@ -34,7 +34,7 @@ class PostEventListenerTest {
     private UserRepository userRepository;
 
     @InjectMocks
-    private PostEventListener listener;
+    private PostViewedEventListener listener;
 
     @Test
     @DisplayName("onPostViewed - saves view and increments counter")
