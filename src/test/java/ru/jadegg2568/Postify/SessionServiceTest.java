@@ -14,7 +14,6 @@ import ru.jadegg2568.Postify.entity.Session;
 import ru.jadegg2568.Postify.entity.User;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import ru.jadegg2568.Postify.config.SessionProperties.ExpiredDeleting;
 import ru.jadegg2568.Postify.exception.auth.SessionExpiredException;
 import ru.jadegg2568.Postify.exception.auth.SessionMismatchException;
 import ru.jadegg2568.Postify.exception.auth.SessionNotFoundException;
@@ -254,9 +253,10 @@ class SessionServiceTest {
     @DisplayName("clearExpiredSessions - должен удалить просроченные сессии")
     void clearExpiredSessions_ShouldDeleteExpiredSessions() {
         // given
-        ExpiredDeleting expiredDeleting = new ExpiredDeleting();
-        expiredDeleting.setCount(50);
-        when(sessionProperties.getExpiredDeleting()).thenReturn(expiredDeleting);
+        SessionProperties.Cleanup cleanup = new SessionProperties.Cleanup();
+        cleanup.setSize(50);
+        cleanup.setDelay(Duration.ofHours(1));
+        when(sessionProperties.getCleanup()).thenReturn(cleanup);
         when(sessionRepository.findExpiredIds(any(Instant.class), any(Pageable.class)))
                 .thenReturn(List.of(1L, 2L, 3L));
 
@@ -272,9 +272,10 @@ class SessionServiceTest {
     @DisplayName("clearExpiredSessions - не должен вызывать delete если просроченных сессий нет")
     void clearExpiredSessions_ShouldNotDelete_WhenNoExpiredSessions() {
         // given
-        ExpiredDeleting expiredDeleting = new ExpiredDeleting();
-        expiredDeleting.setCount(50);
-        when(sessionProperties.getExpiredDeleting()).thenReturn(expiredDeleting);
+        SessionProperties.Cleanup cleanup = new SessionProperties.Cleanup();
+        cleanup.setSize(50);
+        cleanup.setDelay(Duration.ofHours(1));
+        when(sessionProperties.getCleanup()).thenReturn(cleanup);
         when(sessionRepository.findExpiredIds(any(Instant.class), any(Pageable.class)))
                 .thenReturn(List.of());
 

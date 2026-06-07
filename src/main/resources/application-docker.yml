@@ -52,17 +52,18 @@ minio:
   secret-key: ${OBJECT_STORAGE_PASSWORD:minioadmin123}
   bucket: ${OBJECT_STORAGE_BUCKET:postify-files}
 
-postify:
+app:
   session:
-    secretKey: ${POSTIFY_SESSION_SECRET_KEY}
+    secretKey: ${APP_SESSION_SECRET_KEY}
 
-    expiration: ${POSTIFY_SESSION_EXPIRATION:1h}
-    refreshExpiration: ${POSTIFY_SESSION_REFRESH_EXPIRATION:30d}
+    expiration: ${APP_SESSION_EXPIRATION:1h}
+    refreshExpiration: ${APP_SESSION_REFRESH_EXPIRATION:30d}
 
-    expiredDeleting:
-      delay: ${POSTIFY_SESSION_EXPIRED_DELETING_DELAY:5m}
-      count: ${POSTIFY_SESSION_EXPIRED_DELETING_COUNT:10000}
+    cleanup:
+      delay: ${APP_SESSION_CLEANUP_DELAY:5m}
+      suze: ${APP_SESSION_CLEANUP_COUNT:10000}
   views:
-    cleanup-delay: ${POSTIFY_VIEWS_CLEANUP_DELAY:1h}
-    retention-age: ${POSTIFY_VIEWS_RETENTION_AGE:24h}
-    batch-size: ${POSTIFY_VIEWS_BATCH_SIZE:10000}
+    expiration: ${APP_VIEWS_EXPIRATION:24h}
+    cleanup:
+      delay: ${APP_VIEWS_CLEANUP_DELAY:1h}
+      size: ${APP_VIEWS_CLEANUP_SIZE:10000}

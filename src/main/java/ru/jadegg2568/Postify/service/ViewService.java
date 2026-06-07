@@ -27,11 +27,11 @@ public class ViewService {
 
     @Transactional
     public int clearOldViews() {
-        Instant cutoff = Instant.now().minus(viewProperties.getRetentionAge());
+        Instant cutoff = Instant.now().minus(viewProperties.getExpiration());
         int deleted = postViewRepository.deleteByCreatedAtBefore(cutoff);
         if (deleted > 0) {
-            log.info("Deleted {} stale post view records older than {} hours",
-                    deleted, viewProperties.getRetentionAge().toHours());
+            log.info("Deleted {} old post view records older than {} hours",
+                    deleted, viewProperties.getExpiration().toHours());
         }
         return deleted;
     }

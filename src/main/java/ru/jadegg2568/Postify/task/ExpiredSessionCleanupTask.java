@@ -12,7 +12,7 @@ import ru.jadegg2568.Postify.service.SessionService;
 public class ExpiredSessionCleanupTask {
     private final SessionService sessionService;
 
-    @Scheduled(fixedDelayString = "${postify.session.expired-deleting.delay}")
+    @Scheduled(fixedDelayString = "#{@sessionProperties.cleanup.getDelay().toMillis()}")
     public void cleanupExpiredSessions() {
         sessionService.clearExpiredSessions();
     }

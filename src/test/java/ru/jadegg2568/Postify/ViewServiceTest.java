@@ -64,8 +64,8 @@ class ViewServiceTest {
     @DisplayName("clearOldViews - deletes records older than configured age")
     void clearOldViews_ShouldDeleteRecordsOlderThanConfiguredAge() {
         // given
-        Duration retentionAge = Duration.ofHours(24);
-        when(viewProperties.getRetentionAge()).thenReturn(retentionAge);
+        Duration duration = Duration.ofHours(24);
+        when(viewProperties.getExpiration()).thenReturn(duration);
         when(postViewRepository.deleteByCreatedAtBefore(any())).thenReturn(3);
 
         // when
@@ -78,7 +78,7 @@ class ViewServiceTest {
         verify(postViewRepository).deleteByCreatedAtBefore(captor.capture());
 
         Instant cutoff = captor.getValue();
-        Instant expectedCutoff = Instant.now().minus(retentionAge);
+        Instant expectedCutoff = Instant.now().minus(duration);
 
         assertThat(cutoff).isBetween(
                 expectedCutoff.minusSeconds(2),

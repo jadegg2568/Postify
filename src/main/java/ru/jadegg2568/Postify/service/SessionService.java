@@ -98,7 +98,7 @@ public class SessionService {
 
     @Transactional
     public void clearExpiredSessions() {
-        int limit = sessionProperties.getExpiredDeleting().getCount();
+        int limit = sessionProperties.getCleanup().getSize();
 
         List<Long> ids = sessionRepository.findExpiredIds(Instant.now(), PageRequest.of(0, limit));
         sessionRepository.deleteByIds(ids);

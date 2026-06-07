@@ -53,15 +53,16 @@ minio:
   secret-key: minioadmin
   bucket: postify-files
 
-postify:
+app:
   session:
     secretKey: yEk<Cjzh%oAwAR9y0:&Uq|AmS$F|A*yw
     expiration: 1h
     refreshExpiration: 30d
-    expiredDeleting:
+    cleanup:
       delay: 5m
-      count: 10000
+      size: 10000
   views:
-    cleanup-delay: 1h
-    retention-age: 24h
-    batch-size: 10000
+    expiration: 24h
+    cleanup:
+      delay: 1h
+      size: 10000
