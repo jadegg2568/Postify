@@ -11,7 +11,7 @@ import ru.jadegg2568.Postify.entity.Post;
 import ru.jadegg2568.Postify.entity.PostView;
 import ru.jadegg2568.Postify.entity.User;
 import ru.jadegg2568.Postify.event.PostViewedEvent;
-import ru.jadegg2568.Postify.event.listener.PostViewedEventListener;
+import ru.jadegg2568.Postify.listener.PostViewListener;
 import ru.jadegg2568.Postify.repository.PostRepository;
 import ru.jadegg2568.Postify.repository.PostViewRepository;
 import ru.jadegg2568.Postify.repository.UserRepository;
@@ -22,7 +22,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-class PostViewedEventListenerTest {
+class PostViewListenerTest {
 
     @Mock
     private PostViewRepository postViewRepository;
@@ -34,7 +34,7 @@ class PostViewedEventListenerTest {
     private UserRepository userRepository;
 
     @InjectMocks
-    private PostViewedEventListener listener;
+    private PostViewListener listener;
 
     @Test
     @DisplayName("onPostViewed - saves view and increments counter")
@@ -43,10 +43,9 @@ class PostViewedEventListenerTest {
         UUID postUuid = UUID.randomUUID();
         User user = User.builder().id(10L).uuid(userUuid).name("viewer").build();
         Post post = Post.builder().id(20L).uuid(postUuid).title("t").content("c").build();
-        PostViewedEvent event = new PostViewedEvent(user, post);
+        PostViewedEvent event = new PostViewedEvent(user, post, "COMMON");
 
-        when(postRepository.getReferenceById(20L)).thenReturn(post);
-        when(userRepository.getReferenceById(10L)).thenReturn(user);
+        // ✅ Ставим стабы только на то, что реально используется
         when(postViewRepository.save(any(PostView.class))).thenAnswer(inv -> inv.getArgument(0));
 
         listener.onPostViewed(event);
@@ -62,15 +61,15 @@ class PostViewedEventListenerTest {
         UUID postUuid = UUID.randomUUID();
         User user = User.builder().id(10L).uuid(userUuid).name("viewer").build();
         Post post = Post.builder().id(20L).uuid(postUuid).title("t").content("c").build();
-        PostViewedEvent event = new PostViewedEvent(user, post);
+        PostViewedEvent event = new PostViewedEvent(user, post, "COMMON");
 
-        when(postRepository.getReferenceById(20L)).thenReturn(post);
-        when(userRepository.getReferenceById(10L)).thenReturn(user);
+        // ✅ Ставим стаб только на save, который бросит исключение
         when(postViewRepository.save(any(PostView.class)))
                 .thenThrow(new DataIntegrityViolationException("duplicate"));
 
         listener.onPostViewed(event);
 
+        verify(postViewRepository).save(any(PostView.class));
         verify(postRepository, never()).incrementViews(any());
     }
 }

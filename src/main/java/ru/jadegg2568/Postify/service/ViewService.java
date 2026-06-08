@@ -22,7 +22,8 @@ public class ViewService {
     private final ViewProperties viewProperties;
 
     public void viewedPost(User user, Post post) {
-        eventPublisher.publishEvent(new PostViewedEvent(user, post));
+        // TODO: Post category (source)
+        eventPublisher.publishEvent(new PostViewedEvent(user, post, "COMMON"));
     }
 
     @Transactional
