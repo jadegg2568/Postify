@@ -10,7 +10,7 @@ public class DialogueCreatedEvent extends DialogueEvent {
     private final User invited;
 
     public DialogueCreatedEvent(User initiator, Dialogue dialogue, User invited) {
-        super(initiator, dialogue, invited);
+        super(initiator, dialogue);
         this.initiator = initiator;
         this.invited = invited;
     }

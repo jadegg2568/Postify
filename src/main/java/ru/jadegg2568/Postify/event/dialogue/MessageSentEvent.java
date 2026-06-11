@@ -11,12 +11,12 @@ public class MessageSentEvent extends DialogueEvent {
     private final String textPreview;
     private final Long replyToId;
 
-    public MessageSentEvent(User sender, Message message, Dialogue dialogue, User user2) {
-        super(sender, dialogue, user2);
-        this.message = message;
-        this.textPreview = message.getText().length() > 50 
-                ? message.getText().substring(0, 50) + "..." 
-                : message.getText();
-        this.replyToId = message.getReplyTo() != null ? message.getReplyTo().getId() : null;
+    public MessageSentEvent(User sender, Message msg, Dialogue dialogue) {
+        super(sender, dialogue);
+        this.message = msg;
+        this.textPreview = msg.getText().length() > 50
+                ? msg.getText().substring(0, 50) + "..."
+                : msg.getText();
+        this.replyToId = msg.getReplyTo() != null ? msg.getReplyTo().getId() : null;
     }
 }
