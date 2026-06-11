@@ -1,4 +1,4 @@
-package ru.jadegg2568.Postify;
+package ru.jadegg2568.Postify.service;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -20,8 +20,6 @@ import ru.jadegg2568.Postify.exception.auth.SessionMismatchException;
 import ru.jadegg2568.Postify.exception.auth.SessionNotFoundException;
 import ru.jadegg2568.Postify.repository.SessionRepository;
 import ru.jadegg2568.Postify.security.TokenManager;
-import ru.jadegg2568.Postify.service.SessionService;
-import ru.jadegg2568.Postify.service.UserService;
 
 import java.time.Duration;
 import java.time.Instant;

@@ -1,6 +1,5 @@
-package ru.jadegg2568.Postify;
+package ru.jadegg2568.Postify.service;
 
-import com.github.dockerjava.api.exception.NotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -12,13 +11,10 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import ru.jadegg2568.Postify.request.*;
 import ru.jadegg2568.Postify.entity.User;
-import ru.jadegg2568.Postify.exception.auth.NotAuthorizedException;
 import ru.jadegg2568.Postify.exception.user.UserNotFoundException;
 import ru.jadegg2568.Postify.mapper.UserMapper;
 import ru.jadegg2568.Postify.repository.UserRepository;
 import ru.jadegg2568.Postify.security.TokenManager;
-import ru.jadegg2568.Postify.entity.Permissions;
-import ru.jadegg2568.Postify.service.UserService;
 
 import java.util.List;
 import java.util.Optional;

@@ -1,4 +1,4 @@
-package ru.jadegg2568.Postify;
+package ru.jadegg2568.Postify.service;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -18,7 +18,6 @@ import ru.jadegg2568.Postify.request.LoginRequest;
 import ru.jadegg2568.Postify.request.RegisterRequest;
 import ru.jadegg2568.Postify.request.UpdateProfileRequest;
 import ru.jadegg2568.Postify.security.TokenManager;
-import ru.jadegg2568.Postify.service.AuthService;
 
 import java.util.Optional;
 import java.util.UUID;

@@ -1,4 +1,4 @@
-package ru.jadegg2568.Postify;
+package ru.jadegg2568.Postify.mapper;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -6,9 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 import ru.jadegg2568.Postify.entity.Session;
 import ru.jadegg2568.Postify.entity.User;
-import ru.jadegg2568.Postify.mapper.AuthMapper;
-import ru.jadegg2568.Postify.mapper.AuthMapperImpl;
-import ru.jadegg2568.Postify.mapper.SessionMapperImpl;
 import ru.jadegg2568.Postify.response.AuthResponse;
 import ru.jadegg2568.Postify.response.UserResponse;
 

@@ -1,4 +1,4 @@
-package ru.jadegg2568.Postify;
+package ru.jadegg2568.Postify.listener;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -11,7 +11,6 @@ import ru.jadegg2568.Postify.entity.Post;
 import ru.jadegg2568.Postify.entity.PostView;
 import ru.jadegg2568.Postify.entity.User;
 import ru.jadegg2568.Postify.event.PostViewedEvent;
-import ru.jadegg2568.Postify.listener.PostViewListener;
 import ru.jadegg2568.Postify.repository.PostRepository;
 import ru.jadegg2568.Postify.repository.PostViewRepository;
 import ru.jadegg2568.Postify.repository.UserRepository;

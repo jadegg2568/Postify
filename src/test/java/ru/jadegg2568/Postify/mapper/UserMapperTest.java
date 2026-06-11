@@ -1,10 +1,9 @@
-package ru.jadegg2568.Postify;
+package ru.jadegg2568.Postify.mapper;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;
 import ru.jadegg2568.Postify.entity.User;
-import ru.jadegg2568.Postify.mapper.UserMapper;
 import ru.jadegg2568.Postify.request.RegisterRequest;
 import ru.jadegg2568.Postify.request.UpdateProfileRequest;
 import ru.jadegg2568.Postify.response.UserResponse;

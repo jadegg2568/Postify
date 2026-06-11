@@ -1,4 +1,4 @@
-package ru.jadegg2568.Postify;
+package ru.jadegg2568.Postify.service;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -15,8 +15,6 @@ import ru.jadegg2568.Postify.mapper.MessageMapper;
 import ru.jadegg2568.Postify.repository.DialogueRepository;
 import ru.jadegg2568.Postify.repository.MessageRepository;
 import ru.jadegg2568.Postify.request.MessageCreateRequest;
-import ru.jadegg2568.Postify.service.DialogueService;
-import ru.jadegg2568.Postify.service.UserService;
 
 import java.util.Optional;
 import java.util.UUID;

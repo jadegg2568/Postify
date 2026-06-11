@@ -1,11 +1,10 @@
-package ru.jadegg2568.Postify;
+package ru.jadegg2568.Postify.mapper;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;
 import ru.jadegg2568.Postify.entity.Session;
 import ru.jadegg2568.Postify.entity.User;
-import ru.jadegg2568.Postify.mapper.SessionMapper;
 import ru.jadegg2568.Postify.response.SessionResponse;
 
 import java.time.Instant;

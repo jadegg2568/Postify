@@ -1,4 +1,4 @@
-package ru.jadegg2568.Postify;
+package ru.jadegg2568.Postify.service;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -12,8 +12,6 @@ import ru.jadegg2568.Postify.entity.User;
 import ru.jadegg2568.Postify.event.admin.AdminChangePermissionsEvent;
 import ru.jadegg2568.Postify.exception.auth.NoAccessException;
 import ru.jadegg2568.Postify.exception.user.UserNotFoundException;
-import ru.jadegg2568.Postify.service.AdminService;
-import ru.jadegg2568.Postify.service.UserService;
 
 import java.util.UUID;
 
