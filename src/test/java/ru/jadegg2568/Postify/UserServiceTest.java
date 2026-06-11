@@ -103,33 +103,6 @@ class UserServiceTest {
     }
 
     @Test
-    @DisplayName("updateRights - должен успешно обновить права пользователя")
-    void updateRights_ShouldUpdateUserPermissions_WhenUserExists() {
-        // given
-        Permissions newPermissions = Permissions.ADMIN; // Предполагаем, что ADMIN есть в твоем enum
-        when(userRepository.findByUuid(uuid)).thenReturn(Optional.of(user));
-
-        // when
-        userService.updatePermissions(uuid, newPermissions);
-
-        // then
-        assertThat(user.getPermissions()).isEqualTo(newPermissions);
-        verify(userRepository).findByUuid(uuid);
-    }
-
-    @Test
-    @DisplayName("updateRights - должен выбросить ошибку если пользователь не найден")
-    void updatePermissions_ShouldThrowException_WhenUserNotFound() {
-        // given
-        Permissions newPermissions = Permissions.ADMIN;
-        when(userRepository.findByUuid(uuid)).thenReturn(Optional.empty());
-
-        // when & then
-        assertThatThrownBy(() -> userService.updatePermissions(uuid, newPermissions))
-                .isInstanceOf(UserNotFoundException.class);
-    }
-
-    @Test
     @DisplayName("searchUsers - должен вернуть список пользователей по поисковому запросу")
     void searchUsers_ShouldReturnListOfUsers() {
         // given

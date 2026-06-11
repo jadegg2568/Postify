@@ -11,6 +11,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import ru.jadegg2568.Postify.entity.Permissions;
 import ru.jadegg2568.Postify.security.UuidUserDetails;
+import ru.jadegg2568.Postify.service.AdminService;
 import ru.jadegg2568.Postify.service.UserService;
 
 import java.util.UUID;
@@ -28,7 +29,7 @@ import java.util.UUID;
 @RequestMapping("/v1/admin")
 @RequiredArgsConstructor
 public class AdminControllerV1 {
-    private final UserService userService;
+    private final AdminService adminService;
 
     // PATCH /{uuid}/rights
     @Operation(summary = "Change user permissions", description = "Allows OWNER to promote/demote users")
@@ -45,6 +46,6 @@ public class AdminControllerV1 {
             @PathVariable UUID uuid,
             @RequestParam Permissions newPermissions) {
 
-        userService.updatePermissions(uuid, newPermissions);
+        adminService.updatePermissions(details.uuid(), uuid, newPermissions);
     }
 }
