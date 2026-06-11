@@ -7,6 +7,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import ru.jadegg2568.Postify.entity.Like;
@@ -39,6 +40,8 @@ class LikeServiceTest {
 
     @InjectMocks
     private LikeService likeService;
+
+    @Mock private ApplicationEventPublisher eventPublisher;
 
     @Test
     @DisplayName("getLikesCount - returns count from repository")

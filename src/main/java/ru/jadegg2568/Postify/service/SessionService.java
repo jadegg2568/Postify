@@ -2,6 +2,7 @@ package ru.jadegg2568.Postify.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -9,6 +10,9 @@ import ru.jadegg2568.Postify.config.SessionProperties;
 import ru.jadegg2568.Postify.data.DeviceData;
 import ru.jadegg2568.Postify.entity.Session;
 import ru.jadegg2568.Postify.entity.User;
+import ru.jadegg2568.Postify.event.user.UserLoggedEvent;
+import ru.jadegg2568.Postify.event.user.UserSessionRevokedEvent;
+import ru.jadegg2568.Postify.event.user.UserSessionsRevokedEvent;
 import ru.jadegg2568.Postify.exception.auth.SessionExpiredException;
 import ru.jadegg2568.Postify.exception.auth.SessionMismatchException;
 import ru.jadegg2568.Postify.exception.auth.SessionNotFoundException;
@@ -28,6 +32,7 @@ public class SessionService {
     private final UserService userService;
     private final SessionRepository sessionRepository;
     private final TokenManager tokenManager;
+    private final ApplicationEventPublisher eventPublisher;
 
     @Transactional
     public Session generateSession(User user, DeviceData deviceData) {
@@ -46,6 +51,10 @@ public class SessionService {
                 .build();
 
         log.debug("Generated user session: {} for user {}", uuid, user.getUuid());
+
+        eventPublisher.publishEvent(new UserLoggedEvent(user, null,
+                String.format("%s on %s", deviceData.browser(), deviceData.os())));
+
         return sessionRepository.save(session);
     }
 
@@ -87,6 +96,7 @@ public class SessionService {
         Session session = sessionRepository.findByDetailedInfo(userUuid, uuid)
                 .orElseThrow(SessionNotFoundException::new);
         session.setCancelled(true);
+        eventPublisher.publishEvent(new UserSessionRevokedEvent(session.getUser(), session));
     }
 
     @Transactional
@@ -94,12 +104,12 @@ public class SessionService {
         User user = userService.getByUuid(userUuid);
         List<Session> sessions = sessionRepository.findByUserId(user.getId());
         sessions.forEach(s -> s.setCancelled(true));
+        eventPublisher.publishEvent(new UserSessionsRevokedEvent(user));
     }
 
     @Transactional
     public void clearExpiredSessions() {
         int limit = sessionProperties.getCleanup().getSize();
-
         List<Long> ids = sessionRepository.findExpiredIds(Instant.now(), PageRequest.of(0, limit));
         sessionRepository.deleteByIds(ids);
         log.info("Deleted {} expired sessions", ids.size());

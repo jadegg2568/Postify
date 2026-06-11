@@ -6,6 +6,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.context.ApplicationEventPublisher;
 import ru.jadegg2568.Postify.entity.Permissions;
 import ru.jadegg2568.Postify.entity.Post;
 import ru.jadegg2568.Postify.entity.User;
@@ -41,6 +42,8 @@ class PostServiceTest {
 
     @InjectMocks
     private PostService postService;
+
+    @Mock private ApplicationEventPublisher eventPublisher;
 
     @Test
     @DisplayName("create - creates post without reply")

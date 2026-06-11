@@ -2,6 +2,7 @@ package ru.jadegg2568.Postify.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
@@ -10,6 +11,8 @@ import ru.jadegg2568.Postify.entity.Like;
 import ru.jadegg2568.Postify.entity.LikeId;
 import ru.jadegg2568.Postify.entity.Post;
 import ru.jadegg2568.Postify.entity.User;
+import ru.jadegg2568.Postify.event.post.PostLikedEvent;
+import ru.jadegg2568.Postify.event.post.PostUnlikedEvent;
 import ru.jadegg2568.Postify.exception.post.PostNotFoundException;
 import ru.jadegg2568.Postify.mapper.UserMapper;
 import ru.jadegg2568.Postify.repository.LikeRepository;
@@ -25,8 +28,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class LikeService {
     private final LikeRepository likeRepository;
-    private final UserMapper userMapper;
-    private final FileService fileService;
+    private final ApplicationEventPublisher eventPublisher;
 
     @Transactional(readOnly = true)
     public long getLikesCount(Post post) {
@@ -49,8 +51,8 @@ public class LikeService {
             likeRepository.save(like);
             log.info("Post {} liked by user {}", post.getUuid(), user.getUuid());
 
-            // TODO: EDA event
-            // notificationEventPublisher.publishLikeEvent(user, post);
+            eventPublisher.publishEvent(new PostLikedEvent(user, post));
+
         } catch (DataIntegrityViolationException ex) {
             log.debug("Post {} already liked by user {}", post.getUuid(), user.getUuid());
         }
@@ -64,7 +66,8 @@ public class LikeService {
             likeRepository.deleteById(new LikeId(post.getId(), user.getId()));
             log.info("Like removed from post {} by user {}", post.getUuid(), user.getUuid());
 
-            // TODO: EDA event
+            eventPublisher.publishEvent(new PostUnlikedEvent(user, post));
+
         } catch (EmptyResultDataAccessException ex) {
             log.debug("Like not found for post {} by user {}", post.getUuid(), user.getUuid());
         }

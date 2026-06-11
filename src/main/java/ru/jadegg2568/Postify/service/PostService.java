@@ -2,12 +2,17 @@ package ru.jadegg2568.Postify.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.jadegg2568.Postify.entity.Post;
 import ru.jadegg2568.Postify.entity.User;
+import ru.jadegg2568.Postify.event.file.FileUploadedEvent;
+import ru.jadegg2568.Postify.event.post.PostCreatedEvent;
+import ru.jadegg2568.Postify.event.post.PostDeletedEvent;
+import ru.jadegg2568.Postify.event.post.PostUpdatedEvent;
 import ru.jadegg2568.Postify.exception.auth.NoAccessException;
 import ru.jadegg2568.Postify.exception.post.PostNotFoundException;
 import ru.jadegg2568.Postify.mapper.PostMapper;
@@ -25,6 +30,7 @@ public class PostService {
     private final UserService userService;
     private final PostRepository postRepository;
     private final PostMapper postMapper;
+    private final ApplicationEventPublisher eventPublisher;
 
     @Transactional(readOnly = true)
     public boolean isAuthor(UUID postUuid, UUID actorUuid) {
@@ -44,9 +50,10 @@ public class PostService {
         post.setAuthor(author);
         post.setReplyTo(replyTo);
 
-        postRepository.save(post);
+        Post created = postRepository.save(post);
+        eventPublisher.publishEvent(new PostCreatedEvent(author, created));
         log.info("Post created: {} by {}", post.getUuid(), author.getUuid());
-        return post;
+        return created;
     }
 
     @Transactional
@@ -57,6 +64,7 @@ public class PostService {
 
         requireOwningOrAdmin(user, post);
         postMapper.updateEntity(request, post);
+        eventPublisher.publishEvent(new PostUpdatedEvent(user, post));
 
         log.info("Post updated: {} by {}", uuid, authUuid);
         return post;
@@ -70,6 +78,7 @@ public class PostService {
 
         requireOwningOrAdmin(user, post);
         postRepository.delete(post);
+        eventPublisher.publishEvent(new PostDeletedEvent(user, post));
 
         log.info("Post deleted: {} by {}", uuid, authUuid);
     }

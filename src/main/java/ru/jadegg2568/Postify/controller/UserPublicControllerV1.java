@@ -73,7 +73,7 @@ public class UserPublicControllerV1 {
 
     private @NonNull UserResponse getUserResponse(User user) {
         String avatarKey = user.getAvatarKey();
-        String avatarUrl = (avatarKey != null) ? fileService.getPresignedUrl(avatarKey) : null;
+        String avatarUrl = (avatarKey != null) ? fileService.generatePresignedUrl(avatarKey) : null;
         return userMapper.toResponse(user, avatarUrl);
     }
 }

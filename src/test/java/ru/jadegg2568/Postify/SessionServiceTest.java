@@ -7,6 +7,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.context.ApplicationEventPublisher;
 import ru.jadegg2568.Postify.config.SessionProperties;
 import ru.jadegg2568.Postify.data.DeviceData;
 import ru.jadegg2568.Postify.entity.Permissions;
@@ -57,6 +58,8 @@ class SessionServiceTest {
     private UUID userUuid;
     private UUID sessionUuid;
     private String refreshToken;
+
+    @Mock private ApplicationEventPublisher eventPublisher;
 
     @BeforeEach
     void setUp() {

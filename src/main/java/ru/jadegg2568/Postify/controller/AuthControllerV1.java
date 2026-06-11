@@ -28,8 +28,6 @@ import ru.jadegg2568.Postify.service.FileService;
 import ru.jadegg2568.Postify.service.SessionService;
 import ru.jadegg2568.Postify.util.RequestDataUtils;
 
-import java.util.Optional;
-
 @Tag(
         name = "Auth Controller V1",
         description = "User auth operations API"
@@ -123,7 +121,7 @@ public class AuthControllerV1 {
     private @NonNull UserResponse getUserResponse(User user) {
         // convert avatarKey into avatarUrl
         String avatarKey = user.getAvatarKey();
-        String avatarUrl = (avatarKey != null) ? fileService.getPresignedUrl(avatarKey) : null;
+        String avatarUrl = (avatarKey != null) ? fileService.generatePresignedUrl(avatarKey) : null;
         // map from user text data and avatarUrl
         return userMapper.toResponse(user, avatarUrl);
     }

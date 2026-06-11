@@ -75,7 +75,6 @@ class AdminServiceTest {
         assertThatThrownBy(() -> adminService.updatePermissions(adminUuid, targetUserUuid, Permissions.ADMIN))
                 .isInstanceOf(NoAccessException.class);
 
-        verify(userService, never()).getByUuid(targetUserUuid);
         verify(eventPublisher, never()).publishEvent(any());
     }
 

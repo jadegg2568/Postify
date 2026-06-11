@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 import org.jspecify.annotations.NonNull;
 import org.mapstruct.control.MappingControl;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -12,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.jadegg2568.Postify.entity.Dialogue;
 import ru.jadegg2568.Postify.entity.Message;
 import ru.jadegg2568.Postify.entity.User;
+import ru.jadegg2568.Postify.event.dialogue.MessageSentEvent;
 import ru.jadegg2568.Postify.exception.auth.NoAccessException;
 import ru.jadegg2568.Postify.exception.dialogue.DialogueNotFoundException;
 import ru.jadegg2568.Postify.exception.dialogue.MessageNotFoundException;
@@ -33,6 +35,7 @@ public class DialogueService {
     private final MessageRepository messageRepository;
     private final MessageMapper messageMapper;
     private final UserService userService;
+    private final ApplicationEventPublisher eventPublisher;
 
     /**
      * Ensure canonical ordering: the user with smaller UUID (string compare) becomes user1
@@ -94,7 +97,11 @@ public class DialogueService {
         Message msg = messageMapper.toEntity(dialogue, request.getText());
         msg.setSender(sender);
         msg.setReplyTo(replyTo);
-        return messageRepository.save(msg);
+
+        Message updated = messageRepository.save(msg);
+        eventPublisher.publishEvent(new MessageSentEvent(sender, msg, dialogue));
+
+        return updated;
     }
 
     public @NonNull Dialogue getDialogueByUuid(UUID dialogueUuid) {

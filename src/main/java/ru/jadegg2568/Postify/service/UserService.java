@@ -2,11 +2,13 @@ package ru.jadegg2568.Postify.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-import ru.jadegg2568.Postify.entity.Permissions;
 import ru.jadegg2568.Postify.entity.User;
+import ru.jadegg2568.Postify.event.file.FileUploadedEvent;
+import ru.jadegg2568.Postify.event.user.UserDeletedEvent;
 import ru.jadegg2568.Postify.exception.user.UserNotFoundException;
 import ru.jadegg2568.Postify.mapper.UserMapper;
 import ru.jadegg2568.Postify.repository.UserRepository;
@@ -22,6 +24,7 @@ public class UserService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
     private final FileService fileService;
+    private final ApplicationEventPublisher eventPublisher;
 
     @Transactional
     public User updateProfile(UUID uuid, UpdateProfileRequest request) {
@@ -31,18 +34,9 @@ public class UserService {
 
         userMapper.updateEntity(request, user);
         log.info("Profile updated for user UUID: {}", uuid);
+//        eventPublisher.publishEvent(new UserUpdatedEvent);
 
         return user;
-    }
-
-    @Transactional
-    public void updatePermissions(UUID uuid, Permissions newPermissions) {
-        log.debug("Updating rights for user UUID: {} to: {}", uuid, newPermissions);
-        User user = userRepository.findByUuid(uuid)
-                .orElseThrow(UserNotFoundException::new);
-
-        user.setPermissions(newPermissions);
-        log.info("Rights updated for user UUID: {} to: {}", uuid, newPermissions);
     }
 
     @Transactional
@@ -51,9 +45,9 @@ public class UserService {
         User user = userRepository.findByUuid(uuid)
                 .orElseThrow(UserNotFoundException::new);
 
-        String key = fileService.uploadFile(file);
+        String key = fileService.uploadFile(user, file);
         user.setAvatarKey(key);
-        String url = fileService.getPresignedUrl(key);
+        String url = fileService.generatePresignedUrl(key);
         log.info("Avatar updated for user UUID: {}, new URL: {}", uuid, url);
         return url;
     }
@@ -66,6 +60,7 @@ public class UserService {
 
         userRepository.delete(user);
         log.info("User deleted: {}", uuid);
+        eventPublisher.publishEvent(new UserDeletedEvent(user));
     }
 
     @Transactional(readOnly = true)

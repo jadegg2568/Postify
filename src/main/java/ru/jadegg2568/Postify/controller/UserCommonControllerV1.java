@@ -55,7 +55,7 @@ public class UserCommonControllerV1 {
             @Valid @RequestBody UpdateProfileRequest request) {
         User user = userService.updateProfile(details.uuid(), request);
         String avatarKey = user.getAvatarKey();
-        String avatarUrl = (avatarKey != null) ? fileService.getPresignedUrl(avatarKey) : null;
+        String avatarUrl = (avatarKey != null) ? fileService.generatePresignedUrl(avatarKey) : null;
         return ResponseEntity.ok(userMapper.toResponse(user, avatarUrl));
     }
 

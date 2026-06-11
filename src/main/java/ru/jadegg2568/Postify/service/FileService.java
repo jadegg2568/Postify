@@ -5,9 +5,12 @@ import io.minio.http.Method;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import ru.jadegg2568.Postify.config.MinioConfig;
+import ru.jadegg2568.Postify.entity.User;
+import ru.jadegg2568.Postify.event.file.FileUploadedEvent;
 import ru.jadegg2568.Postify.exception.file.FileDeleteException;
 import ru.jadegg2568.Postify.exception.file.FileDownloadException;
 import ru.jadegg2568.Postify.exception.file.FileUploadException;
@@ -20,6 +23,7 @@ import java.util.UUID;
 public class FileService {
     private final MinioConfig minioConfig;
     private final MinioClient minioClient;
+    private final ApplicationEventPublisher eventPublisher;
 
     @PostConstruct
     public void initBucket() {
@@ -38,7 +42,7 @@ public class FileService {
         }
     }
 
-    public String uploadFile(MultipartFile file) {
+    public String uploadFile(User user, MultipartFile file) {
         try {
             String objectName = UUID.randomUUID().toString();
 
@@ -51,13 +55,14 @@ public class FileService {
                             .build()
             );
 
+            eventPublisher.publishEvent(new FileUploadedEvent(user, objectName, file.getName(), file.getSize(), file.getContentType()));
             return objectName;
         } catch (Exception e) {
             throw new FileUploadException();
         }
     }
 
-    public String getPresignedUrl(String objectName) {
+    public String generatePresignedUrl(String objectName) {
         try {
             return minioClient.getPresignedObjectUrl(
                     GetPresignedObjectUrlArgs.builder()

@@ -8,6 +8,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import ru.jadegg2568.Postify.request.*;
 import ru.jadegg2568.Postify.entity.User;
@@ -51,6 +52,8 @@ class UserServiceTest {
     private RegisterRequest registerRequest;
     private LoginRequest loginRequest;
     private UpdateProfileRequest updateProfileRequest;
+
+    @Mock private ApplicationEventPublisher eventPublisher;
 
     @BeforeEach
     void setUp() {

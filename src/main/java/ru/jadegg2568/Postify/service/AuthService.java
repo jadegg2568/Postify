@@ -2,11 +2,15 @@ package ru.jadegg2568.Postify.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.context.event.EventPublicationInterceptor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.jadegg2568.Postify.entity.Permissions;
 import ru.jadegg2568.Postify.entity.User;
+import ru.jadegg2568.Postify.event.user.UserLoggedEvent;
+import ru.jadegg2568.Postify.event.user.UserRegisteredEvent;
 import ru.jadegg2568.Postify.exception.auth.InvalidCredentialsException;
 import ru.jadegg2568.Postify.mapper.UserMapper;
 import ru.jadegg2568.Postify.repository.UserRepository;
@@ -20,6 +24,7 @@ public class AuthService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
+    private final ApplicationEventPublisher eventPublisher;
 
     @Transactional
     public User register(RegisterRequest request) {
@@ -30,6 +35,8 @@ public class AuthService {
 
         userRepository.save(user);
         log.info("User registered successfully with UUID: {}", user.getUuid());
+
+        eventPublisher.publishEvent(new UserRegisteredEvent(user));
 
         return user;
     }
@@ -46,6 +53,9 @@ public class AuthService {
         }
 
         log.info("User logged in successfully: {}", user.getUuid());
+
+        // event publishing is better in its session
+
         return user;
     }
 }
