@@ -15,7 +15,7 @@ import java.time.Instant;
 public class OldPostViewCleanupTask {
     private final ViewService viewService;
 
-    @Scheduled(fixedDelayString = "#{@viewProperties.cleanup.getDelay().toMillis()}")
+    @Scheduled(fixedDelayString = "${app.views.cleanup.delay}")
     public void cleanupOldPostViews() {
         viewService.clearOldViews();
     }

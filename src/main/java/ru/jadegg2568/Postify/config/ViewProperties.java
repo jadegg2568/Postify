@@ -7,7 +7,7 @@ import org.springframework.context.annotation.Configuration;
 
 import java.time.Duration;
 
-@Configuration
+@Configuration("viewProperties")
 @ConfigurationProperties(prefix = "app.views")
 @Data
 public class ViewProperties {
