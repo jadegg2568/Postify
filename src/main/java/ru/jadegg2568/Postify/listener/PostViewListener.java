@@ -24,7 +24,6 @@ public class PostViewListener {
     private final PostRepository postRepository;
 
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
-    @Transactional(noRollbackFor = DataIntegrityViolationException.class)
     public void onPostViewed(PostViewedEvent event) {
         Post post = event.getPost();
         User user = event.getUser();
