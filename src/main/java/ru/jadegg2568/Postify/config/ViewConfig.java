@@ -1,7 +1,6 @@
 package ru.jadegg2568.Postify.config;
 
 import lombok.Data;
-import lombok.Getter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 
@@ -10,9 +9,9 @@ import java.time.Duration;
 @Configuration("viewProperties")
 @ConfigurationProperties(prefix = "app.views")
 @Data
-public class ViewProperties {
+public class ViewConfig {
     private Duration expiration;
-    private ViewProperties.Cleanup cleanup;
+    private ViewConfig.Cleanup cleanup;
 
     @Data
     public static class Cleanup {

@@ -6,7 +6,7 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.jadegg2568.Postify.config.SessionProperties;
+import ru.jadegg2568.Postify.config.SessionConfig;
 import ru.jadegg2568.Postify.data.DeviceData;
 import ru.jadegg2568.Postify.entity.Session;
 import ru.jadegg2568.Postify.entity.User;
@@ -21,14 +21,13 @@ import ru.jadegg2568.Postify.security.TokenManager;
 
 import java.time.Instant;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class SessionService {
-    private final SessionProperties sessionProperties;
+    private final SessionConfig sessionConfig;
     private final UserService userService;
     private final SessionRepository sessionRepository;
     private final TokenManager tokenManager;
@@ -37,7 +36,7 @@ public class SessionService {
     @Transactional
     public Session generateSession(User user, DeviceData deviceData) {
         UUID uuid = UUID.randomUUID();
-        Instant expiresAt = Instant.now().plus(sessionProperties.getRefreshExpiration());
+        Instant expiresAt = Instant.now().plus(sessionConfig.getRefreshExpiration());
 
         String browser = deviceData.browser();
         String os = deviceData.os();
@@ -109,7 +108,7 @@ public class SessionService {
 
     @Transactional
     public void clearExpiredSessions() {
-        int limit = sessionProperties.getCleanup().getSize();
+        int limit = sessionConfig.getCleanup().getSize();
         List<Long> ids = sessionRepository.findExpiredIds(Instant.now(), PageRequest.of(0, limit));
         sessionRepository.deleteByIds(ids);
         log.info("Deleted {} expired sessions", ids.size());

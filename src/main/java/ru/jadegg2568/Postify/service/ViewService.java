@@ -5,7 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.jadegg2568.Postify.config.ViewProperties;
+import ru.jadegg2568.Postify.config.ViewConfig;
 import ru.jadegg2568.Postify.entity.Post;
 import ru.jadegg2568.Postify.entity.User;
 import ru.jadegg2568.Postify.event.PostViewedEvent;
@@ -19,7 +19,7 @@ import java.time.Instant;
 public class ViewService {
     private final ApplicationEventPublisher eventPublisher;
     private final PostViewRepository postViewRepository;
-    private final ViewProperties viewProperties;
+    private final ViewConfig viewConfig;
 
     public void viewedPost(User user, Post post) {
         // TODO: Post category (source)
@@ -28,11 +28,11 @@ public class ViewService {
 
     @Transactional
     public int clearOldViews() {
-        Instant cutoff = Instant.now().minus(viewProperties.getExpiration());
+        Instant cutoff = Instant.now().minus(viewConfig.getExpiration());
         int deleted = postViewRepository.deleteByCreatedAtBefore(cutoff);
         if (deleted > 0) {
             log.info("Deleted {} old post view records older than {} hours",
-                    deleted, viewProperties.getExpiration().toHours());
+                    deleted, viewConfig.getExpiration().toHours());
         }
         return deleted;
     }

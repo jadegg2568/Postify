@@ -6,7 +6,7 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import ru.jadegg2568.Postify.config.SessionProperties;
+import ru.jadegg2568.Postify.config.SessionConfig;
 
 import javax.crypto.SecretKey;
 import java.util.*;
@@ -15,17 +15,17 @@ import java.util.*;
 public class TokenManager {
 
     @Autowired
-    private SessionProperties sessionProperties;
+    private SessionConfig sessionConfig;
 
     private SecretKey getSecretKey() {
-        return Keys.hmacShaKeyFor(sessionProperties.getSecretKey().getBytes());
+        return Keys.hmacShaKeyFor(sessionConfig.getSecretKey().getBytes());
     }
 
     public String generateAccessToken(UUID userUuid) {
         return buildToken(
                 userUuid.toString(),
                 Maps.newHashMap(),
-                sessionProperties.getExpiration().toMillis()
+                sessionConfig.getExpiration().toMillis()
         );
     }
 
@@ -33,7 +33,7 @@ public class TokenManager {
         return buildToken(
                 userUuid.toString(),
                 Map.of("sid", sessionUuid.toString()),
-                sessionProperties.getRefreshExpiration().toMillis()
+                sessionConfig.getRefreshExpiration().toMillis()
         );
     }
 

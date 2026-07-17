@@ -30,6 +30,7 @@ public class SecurityConfig {
                         .requestMatchers("/v1/auth/register", "/v1/auth/login").permitAll()
                         .requestMatchers(HttpMethod.GET, "/v1/users/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/v1/posts", "/v1/posts/**").permitAll()
+                        // system (will be closed in the future)
                         .requestMatchers("/actuator/**").permitAll()
                         .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
                         // Everything else requires JWT

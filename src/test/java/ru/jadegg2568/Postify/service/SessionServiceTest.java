@@ -8,7 +8,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.context.ApplicationEventPublisher;
-import ru.jadegg2568.Postify.config.SessionProperties;
+import ru.jadegg2568.Postify.config.SessionConfig;
 import ru.jadegg2568.Postify.data.DeviceData;
 import ru.jadegg2568.Postify.entity.Permissions;
 import ru.jadegg2568.Postify.entity.Session;
@@ -37,7 +37,7 @@ import static org.mockito.Mockito.*;
 class SessionServiceTest {
 
     @Mock
-    private SessionProperties sessionProperties;
+    private SessionConfig sessionConfig;
 
     @Mock
     private UserService userService;
@@ -81,7 +81,7 @@ class SessionServiceTest {
 
     @Test
     void generateSession_ShouldSaveAndReturnSession() {
-        when(sessionProperties.getRefreshExpiration())
+        when(sessionConfig.getRefreshExpiration())
                 .thenReturn(Duration.ofDays(30));
 
         when(sessionRepository.save(any(Session.class)))
@@ -254,10 +254,10 @@ class SessionServiceTest {
     @DisplayName("clearExpiredSessions - должен удалить просроченные сессии")
     void clearExpiredSessions_ShouldDeleteExpiredSessions() {
         // given
-        SessionProperties.Cleanup cleanup = new SessionProperties.Cleanup();
+        SessionConfig.Cleanup cleanup = new SessionConfig.Cleanup();
         cleanup.setSize(50);
         cleanup.setDelay(Duration.ofHours(1));
-        when(sessionProperties.getCleanup()).thenReturn(cleanup);
+        when(sessionConfig.getCleanup()).thenReturn(cleanup);
         when(sessionRepository.findExpiredIds(any(Instant.class), any(Pageable.class)))
                 .thenReturn(List.of(1L, 2L, 3L));
 
@@ -273,10 +273,10 @@ class SessionServiceTest {
     @DisplayName("clearExpiredSessions - не должен вызывать delete если просроченных сессий нет")
     void clearExpiredSessions_ShouldNotDelete_WhenNoExpiredSessions() {
         // given
-        SessionProperties.Cleanup cleanup = new SessionProperties.Cleanup();
+        SessionConfig.Cleanup cleanup = new SessionConfig.Cleanup();
         cleanup.setSize(50);
         cleanup.setDelay(Duration.ofHours(1));
-        when(sessionProperties.getCleanup()).thenReturn(cleanup);
+        when(sessionConfig.getCleanup()).thenReturn(cleanup);
         when(sessionRepository.findExpiredIds(any(Instant.class), any(Pageable.class)))
                 .thenReturn(List.of());
 
