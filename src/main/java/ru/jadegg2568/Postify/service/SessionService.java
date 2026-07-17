@@ -19,7 +19,9 @@ import ru.jadegg2568.Postify.exception.auth.SessionNotFoundException;
 import ru.jadegg2568.Postify.repository.SessionRepository;
 import ru.jadegg2568.Postify.security.TokenManager;
 
+import java.sql.Timestamp;
 import java.time.Instant;
+import java.time.temporal.TemporalUnit;
 import java.util.List;
 import java.util.UUID;
 
@@ -27,16 +29,15 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 public class SessionService {
-    private final SessionConfig sessionConfig;
     private final UserService userService;
     private final SessionRepository sessionRepository;
     private final TokenManager tokenManager;
     private final ApplicationEventPublisher eventPublisher;
+    private final SessionConfig sessionConfig;
 
     @Transactional
     public Session generateSession(User user, DeviceData deviceData) {
         UUID uuid = UUID.randomUUID();
-        Instant expiresAt = Instant.now().plus(sessionConfig.getRefreshExpiration());
 
         String browser = deviceData.browser();
         String os = deviceData.os();
@@ -46,7 +47,6 @@ public class SessionService {
                 .user(user)
                 .browser(browser)
                 .os(os)
-                .expiresAt(expiresAt)
                 .build();
 
         log.debug("Generated user session: {} for user {}", uuid, user.getUuid());
@@ -108,10 +108,11 @@ public class SessionService {
 
     @Transactional
     public void clearExpiredSessions() {
+        Instant cutoff = Instant.now().minus(sessionConfig.getCleanup().getExpiration());
         int limit = sessionConfig.getCleanup().getSize();
-        List<Long> ids = sessionRepository.findExpiredIds(Instant.now(), PageRequest.of(0, limit));
-        sessionRepository.deleteByIds(ids);
-        log.info("Deleted {} expired sessions", ids.size());
+
+        long deleted = sessionRepository.deleteExpired(cutoff, PageRequest.of(0, limit));
+        log.info("Deleted {} expired sessions", deleted);
     }
 
     @Transactional(readOnly = true)

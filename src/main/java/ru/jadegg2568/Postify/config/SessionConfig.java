@@ -3,6 +3,7 @@ package ru.jadegg2568.Postify.config;
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
+import ru.jadegg2568.Postify.data.Cleanup;
 
 import java.time.Duration;
 
@@ -13,14 +14,9 @@ public class SessionConfig {
 
     private String secretKey;
 
-    private Duration expiration;
+    private Duration accessExpiration;
     private Duration refreshExpiration;
 
-    private SessionConfig.Cleanup cleanup;
+    private Cleanup cleanup;
 
-    @Data
-    public static class Cleanup {
-        private Duration delay;
-        private int size;
-    }
 }

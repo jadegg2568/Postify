@@ -25,7 +25,7 @@ public class TokenManager {
         return buildToken(
                 userUuid.toString(),
                 Maps.newHashMap(),
-                sessionConfig.getExpiration().toMillis()
+                sessionConfig.getAccessExpiration().toMillis()
         );
     }
 

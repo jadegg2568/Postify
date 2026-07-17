@@ -8,7 +8,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.context.ApplicationEventPublisher;
-import ru.jadegg2568.Postify.config.ViewConfig;
+import ru.jadegg2568.Postify.config.PostViewConfig;
 import ru.jadegg2568.Postify.entity.Post;
 import ru.jadegg2568.Postify.entity.User;
 import ru.jadegg2568.Postify.event.PostViewedEvent;
@@ -33,7 +33,7 @@ class ViewServiceTest {
     private PostViewRepository postViewRepository;
 
     @Mock
-    private ViewConfig viewConfig;
+    private PostViewConfig postViewConfig;
 
     @InjectMocks
     private ViewService viewService;
@@ -63,7 +63,7 @@ class ViewServiceTest {
     @DisplayName("clearOldViews - deletes records older than configured age")
     void clearOldViews_ShouldDeleteRecordsOlderThanConfiguredAge() {
         Duration expiration = Duration.ofHours(24);
-        when(viewConfig.getExpiration()).thenReturn(expiration);
+        when(postViewConfig.getCleanup().getExpiration()).thenReturn(expiration);
         when(postViewRepository.deleteByCreatedAtBefore(any())).thenReturn(3);
 
         int deleted = viewService.clearOldViews();

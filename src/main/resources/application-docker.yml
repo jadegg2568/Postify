@@ -56,14 +56,15 @@ app:
   session:
     secretKey: ${APP_SESSION_SECRET_KEY}
 
-    expiration: ${APP_SESSION_EXPIRATION:1h}
+    accessExpiration: ${APP_SESSION_EXPIRATION:1h}
     refreshExpiration: ${APP_SESSION_REFRESH_EXPIRATION:30d}
 
     cleanup:
+      expiration: ${APP_SESSION_EXPIRATION:1h}
       delay: ${APP_SESSION_CLEANUP_DELAY:5m}
-      suze: ${APP_SESSION_CLEANUP_COUNT:10000}
+      size: ${APP_SESSION_CLEANUP_COUNT:10000}
   views:
-    expiration: ${APP_VIEWS_EXPIRATION:24h}
     cleanup:
+      expiration: ${APP_VIEWS_EXPIRATION:24h}
       delay: ${APP_VIEWS_CLEANUP_DELAY:1h}
       size: ${APP_VIEWS_CLEANUP_SIZE:10000}

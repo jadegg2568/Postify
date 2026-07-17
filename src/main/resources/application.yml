@@ -56,13 +56,14 @@ minio:
 app:
   session:
     secretKey: yEk<Cjzh%oAwAR9y0:&Uq|AmS$F|A*yw
-    expiration: 1h
+    accessExpiration: 1h
     refreshExpiration: 30d
     cleanup:
+      expiration: 1h
       delay: 5m
       size: 10000
   views:
-    expiration: 24h
     cleanup:
+      expiration: 24h
       delay: 1h
       size: 10000

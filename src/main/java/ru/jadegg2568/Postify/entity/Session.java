@@ -37,9 +37,6 @@ public class Session {
     @Builder.Default
     private boolean cancelled = false;
 
-    @Timestamp
-    private Instant expiresAt;
-
     @CreationTimestamp
     private Instant createdAt;
 }
