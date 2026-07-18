@@ -7,7 +7,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.jadegg2568.Postify.config.SessionConfig;
-import ru.jadegg2568.Postify.data.DeviceData;
+import ru.jadegg2568.Postify.util.DeviceData;
 import ru.jadegg2568.Postify.entity.Session;
 import ru.jadegg2568.Postify.entity.User;
 import ru.jadegg2568.Postify.event.user.UserLoggedEvent;
@@ -19,9 +19,7 @@ import ru.jadegg2568.Postify.exception.auth.SessionNotFoundException;
 import ru.jadegg2568.Postify.repository.SessionRepository;
 import ru.jadegg2568.Postify.security.TokenManager;
 
-import java.sql.Timestamp;
 import java.time.Instant;
-import java.time.temporal.TemporalUnit;
 import java.util.List;
 import java.util.UUID;
 

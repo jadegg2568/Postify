@@ -1,7 +1,6 @@
 package ru.jadegg2568.Postify.util;
 
 import org.jetbrains.annotations.NotNull;
-import ru.jadegg2568.Postify.data.DeviceData;
 import ua_parser.Client;
 import ua_parser.Parser;
 

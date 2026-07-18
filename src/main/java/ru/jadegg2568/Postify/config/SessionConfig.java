@@ -3,7 +3,6 @@ package ru.jadegg2568.Postify.config;
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
-import ru.jadegg2568.Postify.data.Cleanup;
 
 import java.time.Duration;
 

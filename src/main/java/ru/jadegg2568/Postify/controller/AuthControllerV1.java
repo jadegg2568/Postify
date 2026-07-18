@@ -12,7 +12,7 @@ import org.jspecify.annotations.NonNull;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import ru.jadegg2568.Postify.data.DeviceData;
+import ru.jadegg2568.Postify.util.DeviceData;
 import ru.jadegg2568.Postify.entity.Session;
 import ru.jadegg2568.Postify.entity.User;
 import ru.jadegg2568.Postify.mapper.AuthMapper;
