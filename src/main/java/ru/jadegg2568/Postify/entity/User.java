@@ -10,7 +10,10 @@ import java.time.Instant;
 import java.util.UUID;
 
 @Entity
-@Table(name = "users")
+@Table(name = "users", uniqueConstraints = {
+        @UniqueConstraint(name = "uq_user_mail", columnNames = "mail"),
+        @UniqueConstraint(name = "uq_user_name", columnNames = "name")
+})
 @Getter
 @Setter
 @Builder

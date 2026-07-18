@@ -9,17 +9,15 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.jadegg2568.Postify.entity.Post;
 import ru.jadegg2568.Postify.entity.User;
-import ru.jadegg2568.Postify.event.file.FileUploadedEvent;
 import ru.jadegg2568.Postify.event.post.PostCreatedEvent;
 import ru.jadegg2568.Postify.event.post.PostDeletedEvent;
 import ru.jadegg2568.Postify.event.post.PostUpdatedEvent;
 import ru.jadegg2568.Postify.exception.auth.NoAccessException;
-import ru.jadegg2568.Postify.exception.post.PostNotFoundException;
+import ru.jadegg2568.Postify.exception.PostNotFoundException;
 import ru.jadegg2568.Postify.mapper.PostMapper;
 import ru.jadegg2568.Postify.repository.PostRepository;
 import ru.jadegg2568.Postify.request.PostCreateRequest;
 import ru.jadegg2568.Postify.request.PostUpdateRequest;
-import ru.jadegg2568.Postify.security.UuidUserDetails;
 
 import java.util.UUID;
 

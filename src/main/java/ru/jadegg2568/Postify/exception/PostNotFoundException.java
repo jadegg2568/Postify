@@ -1,7 +1,6 @@
-package ru.jadegg2568.Postify.exception.post;
+package ru.jadegg2568.Postify.exception;
 
 import org.springframework.http.HttpStatus;
-import ru.jadegg2568.Postify.exception.ApiException;
 
 public class PostNotFoundException extends ApiException {
     public PostNotFoundException() {

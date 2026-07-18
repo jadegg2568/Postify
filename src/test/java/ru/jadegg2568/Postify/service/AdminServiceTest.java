@@ -11,7 +11,7 @@ import ru.jadegg2568.Postify.entity.Permissions;
 import ru.jadegg2568.Postify.entity.User;
 import ru.jadegg2568.Postify.event.admin.AdminChangePermissionsEvent;
 import ru.jadegg2568.Postify.exception.auth.NoAccessException;
-import ru.jadegg2568.Postify.exception.user.UserNotFoundException;
+import ru.jadegg2568.Postify.exception.UserNotFoundException;
 
 import java.util.UUID;
 

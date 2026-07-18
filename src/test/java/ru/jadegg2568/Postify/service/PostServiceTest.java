@@ -11,7 +11,7 @@ import ru.jadegg2568.Postify.entity.Permissions;
 import ru.jadegg2568.Postify.entity.Post;
 import ru.jadegg2568.Postify.entity.User;
 import ru.jadegg2568.Postify.exception.auth.NoAccessException;
-import ru.jadegg2568.Postify.exception.post.PostNotFoundException;
+import ru.jadegg2568.Postify.exception.PostNotFoundException;
 import ru.jadegg2568.Postify.mapper.PostMapper;
 import ru.jadegg2568.Postify.repository.PostRepository;
 import ru.jadegg2568.Postify.request.PostCreateRequest;

@@ -13,15 +13,9 @@ import ru.jadegg2568.Postify.entity.Post;
 import ru.jadegg2568.Postify.entity.User;
 import ru.jadegg2568.Postify.event.post.PostLikedEvent;
 import ru.jadegg2568.Postify.event.post.PostUnlikedEvent;
-import ru.jadegg2568.Postify.exception.post.PostNotFoundException;
-import ru.jadegg2568.Postify.mapper.UserMapper;
 import ru.jadegg2568.Postify.repository.LikeRepository;
-import ru.jadegg2568.Postify.repository.PostRepository;
-import ru.jadegg2568.Postify.response.LikeResponse;
-import ru.jadegg2568.Postify.response.UserResponse;
 
 import java.util.List;
-import java.util.UUID;
 
 @Slf4j
 @Service

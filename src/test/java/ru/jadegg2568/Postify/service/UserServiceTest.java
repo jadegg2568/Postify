@@ -11,7 +11,7 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import ru.jadegg2568.Postify.request.*;
 import ru.jadegg2568.Postify.entity.User;
-import ru.jadegg2568.Postify.exception.user.UserNotFoundException;
+import ru.jadegg2568.Postify.exception.UserNotFoundException;
 import ru.jadegg2568.Postify.mapper.UserMapper;
 import ru.jadegg2568.Postify.repository.UserRepository;
 import ru.jadegg2568.Postify.security.TokenManager;

@@ -14,4 +14,14 @@ public enum ParamError {
 
     private final String code;
 
+    // Безопасный парсинг строки без генерации исключений
+    public static ParamError fromMessage(String message) {
+        if (message == null) return null;
+        for (ParamError error : values()) {
+            if (error.name().equals(message)) {
+                return error;
+            }
+        }
+        return null;
+    }
 }
