@@ -2,19 +2,16 @@ package ru.jadegg2568.Postify.listener;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.event.EventListener;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.event.TransactionPhase;
 import org.springframework.transaction.event.TransactionalEventListener;
 import ru.jadegg2568.Postify.entity.Post;
 import ru.jadegg2568.Postify.entity.PostView;
 import ru.jadegg2568.Postify.entity.User;
-import ru.jadegg2568.Postify.event.PostViewedEvent;
+import ru.jadegg2568.Postify.event.post.PostViewedEvent;
 import ru.jadegg2568.Postify.repository.PostRepository;
 import ru.jadegg2568.Postify.repository.PostViewRepository;
-import ru.jadegg2568.Postify.repository.UserRepository;
 
 @Slf4j
 @Component

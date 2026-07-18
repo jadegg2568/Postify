@@ -4,9 +4,16 @@ import lombok.Getter;
 import ru.jadegg2568.Postify.entity.Post;
 import ru.jadegg2568.Postify.entity.User;
 
+import java.util.UUID;
+
 @Getter
 public class PostViewedEvent extends PostEvent {
-    public PostViewedEvent(User user, Post post) {
+    private final UUID viewerUuid;
+    private final String source;
+
+    public PostViewedEvent(User user, Post post, String source) {
         super(user, post);
+        this.viewerUuid = user.getUuid();
+        this.source = source;
     }
 }

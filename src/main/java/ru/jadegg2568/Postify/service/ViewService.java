@@ -8,7 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.jadegg2568.Postify.config.PostViewConfig;
 import ru.jadegg2568.Postify.entity.Post;
 import ru.jadegg2568.Postify.entity.User;
-import ru.jadegg2568.Postify.event.PostViewedEvent;
+import ru.jadegg2568.Postify.event.post.PostViewedEvent;
 import ru.jadegg2568.Postify.repository.PostViewRepository;
 
 import java.time.Instant;
