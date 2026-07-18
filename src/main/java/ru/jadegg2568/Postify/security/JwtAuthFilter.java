@@ -1,4 +1,4 @@
-package ru.jadegg2568.Postify.filter;
+package ru.jadegg2568.Postify.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.Claims;
@@ -16,8 +16,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
-import ru.jadegg2568.Postify.security.TokenManager;
-import ru.jadegg2568.Postify.security.UuidUserDetails;
 
 import java.io.IOException;
 import java.time.Instant;
