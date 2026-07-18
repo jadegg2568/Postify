@@ -1,6 +1,6 @@
-package ru.jadegg2568.Postify.util;
+package ru.jadegg2568.Postify.parse;
 
-public record DeviceData(
+public record Device(
         String browser, // e.g., Chrome 148
         String os // e.g., Windows 10 22H2
 ) {

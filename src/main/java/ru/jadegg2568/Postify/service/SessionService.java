@@ -7,7 +7,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.jadegg2568.Postify.config.SessionConfig;
-import ru.jadegg2568.Postify.util.DeviceData;
+import ru.jadegg2568.Postify.parse.Device;
 import ru.jadegg2568.Postify.entity.Session;
 import ru.jadegg2568.Postify.entity.User;
 import ru.jadegg2568.Postify.event.user.UserLoggedEvent;
@@ -34,11 +34,11 @@ public class SessionService {
     private final SessionConfig sessionConfig;
 
     @Transactional
-    public Session generateSession(User user, DeviceData deviceData) {
+    public Session generateSession(User user, Device device) {
         UUID uuid = UUID.randomUUID();
 
-        String browser = deviceData.browser();
-        String os = deviceData.os();
+        String browser = device.browser();
+        String os = device.os();
 
         Session session = Session.builder()
                 .uuid(uuid)
@@ -50,7 +50,7 @@ public class SessionService {
         log.debug("Generated user session: {} for user {}", uuid, user.getUuid());
 
         eventPublisher.publishEvent(new UserLoggedEvent(user, null,
-                String.format("%s on %s", deviceData.browser(), deviceData.os())));
+                String.format("%s on %s", device.browser(), device.os())));
 
         return sessionRepository.save(session);
     }

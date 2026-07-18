@@ -11,7 +11,7 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.PageRequest;
 import ru.jadegg2568.Postify.config.SessionConfig;
 import ru.jadegg2568.Postify.config.Cleanup;
-import ru.jadegg2568.Postify.util.DeviceData;
+import ru.jadegg2568.Postify.parse.Device;
 import ru.jadegg2568.Postify.entity.Permissions;
 import ru.jadegg2568.Postify.entity.Session;
 import ru.jadegg2568.Postify.entity.User;
@@ -84,8 +84,8 @@ class SessionServiceTest {
         when(sessionRepository.save(any(Session.class)))
                 .thenAnswer(inv -> inv.getArgument(0));
 
-        DeviceData deviceData = new DeviceData("Chrome 148", "Windows 10 22H2");
-        Session result = sessionService.generateSession(user, deviceData);
+        Device device = new Device("Chrome 148", "Windows 10 22H2");
+        Session result = sessionService.generateSession(user, device);
 
         assertThat(result).isNotNull();
         assertThat(result.getUser()).isEqualTo(user);

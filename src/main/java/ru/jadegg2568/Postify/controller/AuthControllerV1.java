@@ -12,7 +12,7 @@ import org.jspecify.annotations.NonNull;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import ru.jadegg2568.Postify.util.DeviceData;
+import ru.jadegg2568.Postify.parse.Device;
 import ru.jadegg2568.Postify.entity.Session;
 import ru.jadegg2568.Postify.entity.User;
 import ru.jadegg2568.Postify.mapper.AuthMapper;
@@ -26,7 +26,7 @@ import ru.jadegg2568.Postify.response.UserResponse;
 import ru.jadegg2568.Postify.service.AuthService;
 import ru.jadegg2568.Postify.service.FileService;
 import ru.jadegg2568.Postify.service.SessionService;
-import ru.jadegg2568.Postify.util.RequestDataUtils;
+import ru.jadegg2568.Postify.parse.UserAgentParser;
 
 @Tag(
         name = "Auth Controller V1",
@@ -47,6 +47,7 @@ public class AuthControllerV1 {
     private final FileService fileService;
     private final UserMapper userMapper;
     private final AuthMapper authMapper;
+    private final UserAgentParser userAgentParser;
 
     // public
     // POST /register
@@ -62,10 +63,10 @@ public class AuthControllerV1 {
     @PostMapping("/register")
     public ResponseEntity<AuthResponse> register(HttpServletRequest servletRequest,
                                                  @Valid @RequestBody RegisterRequest request) {
-        DeviceData deviceData = RequestDataUtils.parseDeviceData(
+        Device device = userAgentParser.parseDevice(
                 servletRequest.getHeader("User-Agent"));
         User user = authService.register(request);
-        return createSessionAndTokens(user, deviceData);
+        return createSessionAndTokens(user, device);
     }
 
     // public
@@ -81,10 +82,10 @@ public class AuthControllerV1 {
     @PostMapping("/login")
     public ResponseEntity<AuthResponse> login(HttpServletRequest servletRequest,
                                               @Valid @RequestBody LoginRequest request) {
-        DeviceData deviceData = RequestDataUtils.parseDeviceData(
+        Device device = userAgentParser.parseDevice(
                 servletRequest.getHeader("User-Agent"));
         User user = authService.login(request);
-        return createSessionAndTokens(user, deviceData);
+        return createSessionAndTokens(user, device);
     }
 
     // public
@@ -105,9 +106,9 @@ public class AuthControllerV1 {
                 .body(new SessionRefreshResponse(token));
     }
 
-    private @NonNull ResponseEntity<AuthResponse> createSessionAndTokens(User user, DeviceData deviceData) {
+    private @NonNull ResponseEntity<AuthResponse> createSessionAndTokens(User user, Device device) {
         // generate session
-        Session session = sessionService.generateSession(user, deviceData);
+        Session session = sessionService.generateSession(user, device);
 
         // generate refresh and access tokens
         String refreshToken = sessionService.generateRefreshToken(session);
