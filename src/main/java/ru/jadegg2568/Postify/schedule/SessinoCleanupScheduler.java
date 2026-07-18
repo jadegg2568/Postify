@@ -1,4 +1,4 @@
-package ru.jadegg2568.Postify.task;
+package ru.jadegg2568.Postify.schedule;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -9,7 +9,7 @@ import ru.jadegg2568.Postify.service.SessionService;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class ExpiredSessionCleanupTask {
+public class SessinoCleanupScheduler {
     private final SessionService sessionService;
 
     @Scheduled(fixedDelayString = "${app.session.cleanup.delay}")
