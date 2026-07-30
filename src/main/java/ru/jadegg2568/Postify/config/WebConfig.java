@@ -9,7 +9,7 @@ public class WebConfig {
 
     // to parse user agent which contains os and browser
     @Bean
-    public Parser userAgentParser() {
+    public Parser uaParser() {
         return new Parser();
     }
 }
