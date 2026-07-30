@@ -46,7 +46,7 @@ services:
       - "80:80" # main
       - "443:443" # ssl
     volumes:
-      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./infra/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
       - ./ssl:/etc/nginx/ssl:ro # ssl files
     networks:
       - postify-network
@@ -58,7 +58,7 @@ services:
     ports:
       - "9090:9090"
     volumes:
-      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./infra/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
     networks:
       - postify-network
     restart: unless-stopped
