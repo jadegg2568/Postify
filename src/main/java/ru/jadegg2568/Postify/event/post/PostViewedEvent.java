@@ -3,6 +3,7 @@ package ru.jadegg2568.Postify.event.post;
 import lombok.Getter;
 import ru.jadegg2568.Postify.entity.Post;
 import ru.jadegg2568.Postify.entity.User;
+import ru.jadegg2568.Postify.event.EventType;
 
 import java.util.UUID;
 
@@ -12,7 +13,7 @@ public class PostViewedEvent extends PostEvent {
     private final String source;
 
     public PostViewedEvent(User user, Post post, String source) {
-        super(user, post);
+        super(EventType.POST_VIEWED, user, post);
         this.viewerUuid = user.getUuid();
         this.source = source;
     }

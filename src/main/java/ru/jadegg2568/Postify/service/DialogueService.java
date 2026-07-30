@@ -3,7 +3,6 @@ package ru.jadegg2568.Postify.service;
 import lombok.RequiredArgsConstructor;
 import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 import org.jspecify.annotations.NonNull;
-import org.mapstruct.control.MappingControl;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -13,7 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.jadegg2568.Postify.entity.Dialogue;
 import ru.jadegg2568.Postify.entity.Message;
 import ru.jadegg2568.Postify.entity.User;
-import ru.jadegg2568.Postify.event.dialogue.MessageSentEvent;
+import ru.jadegg2568.Postify.event.dialogue.DialogueMessageSentEvent;
 import ru.jadegg2568.Postify.exception.auth.NoAccessException;
 import ru.jadegg2568.Postify.exception.dialogue.DialogueNotFoundException;
 import ru.jadegg2568.Postify.exception.dialogue.MessageNotFoundException;
@@ -102,7 +101,7 @@ public class DialogueService {
                 .build();
 
         Message updated = messageRepository.save(msg);
-        eventPublisher.publishEvent(new MessageSentEvent(sender, msg, dialogue));
+        eventPublisher.publishEvent(new DialogueMessageSentEvent(sender, msg, dialogue));
 
         return updated;
     }

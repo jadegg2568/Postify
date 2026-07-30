@@ -4,14 +4,15 @@ import lombok.Getter;
 import ru.jadegg2568.Postify.entity.Post;
 import ru.jadegg2568.Postify.entity.User;
 import ru.jadegg2568.Postify.event.BaseEvent;
+import ru.jadegg2568.Postify.event.EventType;
 
 @Getter
 public abstract class PostEvent extends BaseEvent {
     private final User user;
     private final Post post;
 
-    protected PostEvent(User user, Post post) {
-        super(user.getUuid());
+    protected PostEvent(EventType type, User user, Post post) {
+        super(type, user.getUuid());
         this.user = user;
         this.post = post;
     }
