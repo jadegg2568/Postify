@@ -31,6 +31,7 @@ spring:
       connection-timeout: 30000
       maximum-pool-size: 10
       pool-name: PostifyHikariPool
+      initialization-fail-timeout: -1
 
   jpa:
     hibernate:
@@ -39,8 +40,10 @@ spring:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
 
-  flyway:
+  flyway: # migrations
     enabled: true
+    connect-retries: 5
+    connect-retries-interval: 5s
 
 logging:
   level:
