@@ -1,0 +1,31 @@
+package ru.jadegg2568.Postify.service.websocket;
+
+import lombok.RequiredArgsConstructor;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.stereotype.Service;
+import ru.jadegg2568.Postify.event.dialogue.DialogueEvent;
+import ru.jadegg2568.Postify.event.post.PostEvent;
+import ru.jadegg2568.Postify.event.user.UserEvent;
+import ru.jadegg2568.Postify.response.WebSocketResponse;
+
+@RequiredArgsConstructor
+@Service
+public class WebSocketService {
+    private final WebSocketResponseFactory webSocketResponseFactory;
+    private final SimpMessagingTemplate messagingTemplate;
+
+    public void sendUserUpdate(UserEvent event) {
+        WebSocketResponse response = webSocketResponseFactory.create(event);
+        messagingTemplate.convertAndSend("/topic/user/" + event.getActorId(), response);
+    }
+
+    public void sendPostUpdate(PostEvent event) {
+        WebSocketResponse response = webSocketResponseFactory.create(event);
+        messagingTemplate.convertAndSend("/topic/post/" + event.getPost().getUuid(), response);
+    }
+
+    public void sendDialogueUpdate(DialogueEvent event) {
+        WebSocketResponse response = webSocketResponseFactory.create(event);
+        messagingTemplate.convertAndSend("/topic/dialogue/" + event.getDialogue().getUuid(), response);
+    }
+}
