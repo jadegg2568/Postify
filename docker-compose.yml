@@ -47,7 +47,7 @@ services:
       - "443:443" # ssl
     volumes:
       - ./infra/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
-      - ./ssl:/etc/nginx/ssl:ro # ssl files
+      - ./infra/ssl:/etc/nginx/ssl:ro # ssl files
     networks:
       - postify-network
     restart: unless-stopped
