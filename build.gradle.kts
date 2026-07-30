@@ -27,17 +27,24 @@ dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-web")
 	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
 	implementation("org.springframework.boot:spring-boot-starter-validation")
+	implementation("org.springframework.boot:spring-boot-starter-websocket")
 	developmentOnly("org.springframework.boot:spring-boot-devtools")
-
-	// DevOps
-	implementation("org.springframework.boot:spring-boot-starter-actuator")
-	implementation("io.micrometer:micrometer-registry-prometheus")
 
 	// Security
 	implementation("org.springframework.boot:spring-boot-starter-security")
 	implementation("io.jsonwebtoken:jjwt-api:0.12.5")
 	runtimeOnly("io.jsonwebtoken:jjwt-impl:0.12.5")
 	runtimeOnly("io.jsonwebtoken:jjwt-jackson:0.12.5")
+
+	// DevOps
+	implementation("org.springframework.boot:spring-boot-starter-actuator")
+	implementation("io.micrometer:micrometer-registry-prometheus")
+
+	// Databases + Migrations
+	runtimeOnly("org.postgresql:postgresql")
+	implementation("org.flywaydb:flyway-core")
+	implementation("org.flywaydb:flyway-database-postgresql")
+	implementation("io.minio:minio:8.5.17")
 
 	// Utils
 	implementation("com.github.ua-parser:uap-java:1.6.1") // to parse User-Agent header
@@ -50,12 +57,6 @@ dependencies {
 	implementation("org.mapstruct:mapstruct:1.5.5.Final")
 	annotationProcessor("org.mapstruct:mapstruct-processor:1.5.5.Final")
 	annotationProcessor("org.projectlombok:lombok-mapstruct-binding:0.2.0")
-
-	// Databases + Migrations
-	runtimeOnly("org.postgresql:postgresql")
-	implementation("org.flywaydb:flyway-core")
-	implementation("org.flywaydb:flyway-database-postgresql")
-	implementation("io.minio:minio:8.5.17")
 
 	// Documentation
 	implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.9")
