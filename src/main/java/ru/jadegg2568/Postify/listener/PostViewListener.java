@@ -25,7 +25,7 @@ public class PostViewListener {
         Post post = event.getPost();
         User user = event.getUser();
         try {
-            if (event.getUserUuid() != null) {
+            if (event.getActorId() != null) {
                 PostView view = PostView.builder()
                         .post(post)
                         .user(user)

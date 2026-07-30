@@ -53,7 +53,7 @@ class ViewServiceTest {
         PostViewedEvent event = captor.getValue();
 
         // ✅ Исправлено: сравниваем UUID с UUID
-        assertThat(event.getUserUuid()).isEqualTo(userUuid);
+        assertThat(event.getActorId()).isEqualTo(userUuid);
         assertThat(event.getPost().getUuid()).isEqualTo(postUuid);
         assertThat(event.getUser()).isSameAs(user);
         assertThat(event.getPost()).isSameAs(post);
