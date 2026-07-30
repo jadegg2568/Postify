@@ -1,10 +1,7 @@
 package ru.jadegg2568.Postify.entity;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -17,6 +14,8 @@ import java.util.UUID;
 @Getter
 @Setter
 @NoArgsConstructor
+@AllArgsConstructor
+@Builder
 @ToString(of = {"id", "uuid", "text"})
 public class Message {
 

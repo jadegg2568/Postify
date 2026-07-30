@@ -94,9 +94,12 @@ public class DialogueService {
             replyTo = getMessageByUuid(replyToUuid);
         }
 
-        Message msg = messageMapper.toEntity(dialogue, request.getText());
-        msg.setSender(sender);
-        msg.setReplyTo(replyTo);
+        Message msg = Message.builder()
+                .dialogue(dialogue)
+                .text(request.getText())
+                .sender(sender)
+                .replyTo(replyTo)
+                .build();
 
         Message updated = messageRepository.save(msg);
         eventPublisher.publishEvent(new MessageSentEvent(sender, msg, dialogue));

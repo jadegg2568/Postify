@@ -14,9 +14,6 @@ import ru.jadegg2568.Postify.response.MessageResponse;
 )
 public interface MessageMapper {
 
-    @Mapping(target = "sender", ignore = true) // set in service layer
-    Message toEntity(Dialogue dialogue, String text);
-
     @Mapping(target = "replyTo", source = "replyTo.uuid")
     MessageResponse toResponse(Message response);
 }
