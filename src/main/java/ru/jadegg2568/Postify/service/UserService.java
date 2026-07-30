@@ -39,16 +39,9 @@ public class UserService {
     }
 
     @Transactional
-    public String updateAvatar(UUID uuid, MultipartFile file) {
-        log.debug("Updating avatar for user UUID: {}", uuid);
-        User user = userRepository.findByUuid(uuid)
-                .orElseThrow(UserNotFoundException::new);
-
-        String key = fileService.uploadFile(user, file);
+    public String updateAvatarKey(User user, String key) {
         user.setAvatarKey(key);
-        String url = fileService.generatePresignedUrl(key);
-        log.info("Avatar updated for user UUID: {}, new URL: {}", uuid, url);
-        return url;
+        return fileService.generatePresignedUrl(key);
     }
 
     @Transactional

@@ -59,20 +59,13 @@ public class UserCommonControllerV1 {
         return ResponseEntity.ok(userMapper.toResponse(user, avatarUrl));
     }
 
-    @Operation(
-            summary = "Update photo",
-            description = "Updates user photo and gives url"
-    )
-    @ApiResponses({
-            @ApiResponse(responseCode = "204", description = "Avatar updated successfully"),
-            @ApiResponse(responseCode = "401", description = "Unauthorized")
-    })
-    @PutMapping(value = "/me/avatar", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    @PreAuthorize("isAuthenticated()")
+    @PutMapping("/me/avatar")
     public ResponseEntity<String> updateAvatar(
             @AuthenticationPrincipal UuidUserDetails details,
-            MultipartFile file) {
-        String url = userService.updateAvatar(details.uuid(), file);
+            @RequestParam("file") MultipartFile file) {
+        User user = userService.getByUuid(details.uuid());
+        String key = fileService.uploadFile(user, file);
+        String url = userService.updateAvatarKey(user, key);
         return ResponseEntity.ok(url);
     }
 
