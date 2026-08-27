@@ -3,7 +3,7 @@ package ru.jadegg2568.Postify.auth;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.annotation.Nullable;
 import jakarta.validation.constraints.*;
-import ru.jadegg2568.Postify.exception.ParamCodes;
+import ru.jadegg2568.Postify.common.exception.ParamCodes;
 import ru.jadegg2568.Postify.user.UserParamLimits;
 
 public record RegisterRequest(

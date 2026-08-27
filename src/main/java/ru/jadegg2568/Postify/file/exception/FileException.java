@@ -1,7 +1,7 @@
 package ru.jadegg2568.Postify.file.exception;
 
 import org.springframework.http.HttpStatus;
-import ru.jadegg2568.Postify.exception.ApiException;
+import ru.jadegg2568.Postify.common.exception.ApiException;
 
 public abstract class FileException extends ApiException {
     protected FileException(String message) {

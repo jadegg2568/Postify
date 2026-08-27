@@ -1,4 +1,4 @@
-package ru.jadegg2568.Postify.event;
+package ru.jadegg2568.Postify.common.event;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;

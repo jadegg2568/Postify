@@ -8,7 +8,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import ru.jadegg2568.Postify.config.MinioConfig;
 import ru.jadegg2568.Postify.user.User;
 import ru.jadegg2568.Postify.file.event.FileUploadedEvent;
 import ru.jadegg2568.Postify.file.exception.FileDeleteException;

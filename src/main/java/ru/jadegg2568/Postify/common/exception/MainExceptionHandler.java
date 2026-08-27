@@ -1,4 +1,4 @@
-package ru.jadegg2568.Postify.exception;
+package ru.jadegg2568.Postify.common.exception;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;

@@ -9,7 +9,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.PageRequest;
-import ru.jadegg2568.Postify.config.Cleanup;
+import ru.jadegg2568.Postify.common.config.Cleanup;
 import ru.jadegg2568.Postify.parse.Device;
 import ru.jadegg2568.Postify.user.User;
 import ru.jadegg2568.Postify.auth.exception.SessionExpiredException;

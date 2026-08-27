@@ -1,4 +1,4 @@
-package ru.jadegg2568.Postify.config;
+package ru.jadegg2568.Postify.common.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

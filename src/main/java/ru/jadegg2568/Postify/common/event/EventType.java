@@ -1,4 +1,4 @@
-package ru.jadegg2568.Postify.event;
+package ru.jadegg2568.Postify.common.event;
 
 public enum EventType {
     USER_REGISTERED,

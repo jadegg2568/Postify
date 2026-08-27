@@ -1,4 +1,4 @@
-package ru.jadegg2568.Postify.exception;
+package ru.jadegg2568.Postify.common.exception;
 
 import org.springframework.http.HttpStatus;
 

@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import ru.jadegg2568.Postify.auth.LoginRequest;
 import ru.jadegg2568.Postify.auth.RegisterRequest;
-import ru.jadegg2568.Postify.exception.ParamCodes;
+import ru.jadegg2568.Postify.common.exception.ParamCodes;
 import ru.jadegg2568.Postify.user.UserParamLimits;
 import ru.jadegg2568.Postify.user.UpdateProfileRequest;
 

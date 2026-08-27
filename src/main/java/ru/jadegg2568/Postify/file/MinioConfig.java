@@ -1,4 +1,4 @@
-package ru.jadegg2568.Postify.config;
+package ru.jadegg2568.Postify.file;
 
 import io.minio.MinioClient;
 import lombok.Getter;
