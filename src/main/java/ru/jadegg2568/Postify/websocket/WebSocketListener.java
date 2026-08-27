@@ -5,9 +5,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.event.TransactionPhase;
 import org.springframework.transaction.event.TransactionalEventListener;
-import ru.jadegg2568.Postify.event.dialogue.DialogueEvent;
-import ru.jadegg2568.Postify.event.post.PostEvent;
-import ru.jadegg2568.Postify.event.user.UserEvent;
+import ru.jadegg2568.Postify.dialogue.event.DialogueEvent;
+import ru.jadegg2568.Postify.post.event.PostEvent;
+import ru.jadegg2568.Postify.user.event.UserEvent;
 
 @Slf4j
 @Component

@@ -8,8 +8,11 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import ru.jadegg2568.Postify.exception.param.ParamCodes;
-import ru.jadegg2568.Postify.exception.param.UserParamLimits;
+import ru.jadegg2568.Postify.auth.LoginRequest;
+import ru.jadegg2568.Postify.auth.RegisterRequest;
+import ru.jadegg2568.Postify.exception.ParamCodes;
+import ru.jadegg2568.Postify.user.UserParamLimits;
+import ru.jadegg2568.Postify.user.UpdateProfileRequest;
 
 import java.util.Set;
 
