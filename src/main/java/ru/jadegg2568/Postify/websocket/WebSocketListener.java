@@ -1,4 +1,4 @@
-package ru.jadegg2568.Postify.listener;
+package ru.jadegg2568.Postify.websocket;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -8,8 +8,6 @@ import org.springframework.transaction.event.TransactionalEventListener;
 import ru.jadegg2568.Postify.event.dialogue.DialogueEvent;
 import ru.jadegg2568.Postify.event.post.PostEvent;
 import ru.jadegg2568.Postify.event.user.UserEvent;
-import ru.jadegg2568.Postify.service.websocket.WebSocketResponseFactory;
-import ru.jadegg2568.Postify.service.websocket.WebSocketService;
 
 @Slf4j
 @Component

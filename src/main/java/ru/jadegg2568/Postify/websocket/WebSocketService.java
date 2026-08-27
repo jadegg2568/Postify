@@ -1,4 +1,4 @@
-package ru.jadegg2568.Postify.service.websocket;
+package ru.jadegg2568.Postify.websocket;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -6,7 +6,6 @@ import org.springframework.stereotype.Service;
 import ru.jadegg2568.Postify.event.dialogue.DialogueEvent;
 import ru.jadegg2568.Postify.event.post.PostEvent;
 import ru.jadegg2568.Postify.event.user.UserEvent;
-import ru.jadegg2568.Postify.response.WebSocketResponse;
 
 @RequiredArgsConstructor
 @Service

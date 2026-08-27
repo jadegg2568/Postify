@@ -1,9 +1,8 @@
-package ru.jadegg2568.Postify.service.websocket;
+package ru.jadegg2568.Postify.websocket;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import ru.jadegg2568.Postify.event.BaseEvent;
-import ru.jadegg2568.Postify.response.WebSocketResponse;
 
 import java.util.Map;
 

@@ -1,4 +1,4 @@
-package ru.jadegg2568.Postify.response;
+package ru.jadegg2568.Postify.websocket;
 
 import java.time.Instant;
 import java.util.Map;

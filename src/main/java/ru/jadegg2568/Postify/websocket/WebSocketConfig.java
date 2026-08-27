@@ -1,4 +1,4 @@
-package ru.jadegg2568.Postify.config;
+package ru.jadegg2568.Postify.websocket;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
